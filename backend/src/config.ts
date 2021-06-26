@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 
 interface GlobalConfig {
 	mongooseURI: string
-	mongooseOpts: mongoose.ConnectOptions
+	mongooseOpts: mongoose.ConnectionOptions
 
 	expressPort: number
 }
