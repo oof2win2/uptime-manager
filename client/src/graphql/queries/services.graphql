@@ -1,0 +1,11 @@
+query Services {
+	Services {
+		id
+		name
+		url
+		createdAt
+		updatedAt
+		socketType
+		port
+	}
+}

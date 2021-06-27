@@ -31,6 +31,6 @@ const run = async () => {
 		console.log(`API connected at :${config.expressPort}`)
 	})
 
-	setInterval(GatherLogs, 15*1000) // gather logs every 0.25 mins by default
+	setInterval(GatherLogs, 60*15*1000) // gather logs every 15 mins by default
 }
 run()
