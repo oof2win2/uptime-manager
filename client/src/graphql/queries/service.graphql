@@ -1,0 +1,11 @@
+query Service($id: String!) {
+	Service(id: $id) {
+		id
+		name
+		url
+		createdAt
+		updatedAt
+		socketType
+		port
+	}
+}

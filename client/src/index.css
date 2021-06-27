@@ -1,3 +1,13 @@
 .app {
 	text-align: center;
 }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+
+@font-face {
+	font-family: 'Roboto', sans-serif;
+	src: local('Roboto'), url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap') format('truetype');
+}
+p {
+	font-family: 'Roboto', sans-serif;
+}

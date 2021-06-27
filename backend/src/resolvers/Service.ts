@@ -1,6 +1,7 @@
 import { Resolver, Query, Arg, Mutation } from "type-graphql"
 import Service, { ServiceClass, SocketType } from "../database/types/Service"
 import { DocumentType } from "@typegoose/typegoose"
+import LogModel from "../database/types/Logs"
 
 @Resolver()
 export class ServiceResolver {
@@ -15,13 +16,13 @@ export class ServiceResolver {
 		return Service.findOne({ id: id }).exec()
 	}
 
-	@Mutation(() => ServiceClass)
+	@Mutation(() => ServiceClass, { nullable: true })
 	async CreateService(
 		@Arg("name", () => String) name: string,
 		@Arg("url", () => String) url: string,
 		@Arg("socketType", () => String) type: SocketType,
 		@Arg("port", () => Number) port: number,
-	): Promise<DocumentType<ServiceClass>> {
+	): Promise<DocumentType<ServiceClass> | null> {
 		const service = await Service.create({
 			name: name,
 			url: url,
@@ -33,14 +34,15 @@ export class ServiceResolver {
 		})
 		return service
 	}
-	@Mutation(() => ServiceClass)
+	@Mutation(() => ServiceClass, { nullable: true })
 	async DeleteService(
 		@Arg("id", () => String) id: string
 	): Promise<DocumentType<ServiceClass> | null> {
 		const service = await Service.findOneAndRemove({ id: id }).exec()
+		service?.logs.forEach(logid => LogModel.findByIdAndDelete(logid))
 		return service
 	}
-	@Mutation(() => ServiceClass)
+	@Mutation(() => ServiceClass, { nullable: true })
 	async ModifyService(
 		@Arg("id", () => String) id: string,
 		@Arg("name", () => String) name: string,

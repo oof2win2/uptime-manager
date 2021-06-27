@@ -1,0 +1,8 @@
+.serviceBlock {
+	border-bottom: 1px solid #70928e;
+	display: flex;
+	align-self: center;
+}
+.tooltip {
+	font-family: 'Open Sans', sans-serif;
+}

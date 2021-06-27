@@ -1,0 +1,7 @@
+.dayRect {
+	opacity: 100%;
+	outline: 0 !important;
+}
+.dayRect:hover {
+	opacity: 50%;
+}

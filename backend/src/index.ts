@@ -6,6 +6,8 @@ import mongoose from "mongoose"
 import config from "./config"
 import { ServiceResolver } from "./resolvers/Service"
 import GatherLogs from "./Logger"
+import { LogResolver } from "./resolvers/Logs"
+import cors from "cors"
 
 const run = async () => {
 	mongoose.connect(config.mongooseURI, {
@@ -17,10 +19,11 @@ const run = async () => {
 	})
 	
 	const app = express()
+	app.use(cors())
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [ServiceResolver],
+			resolvers: [ServiceResolver, LogResolver],
 			validate: false
 		})
 	})
@@ -31,6 +34,8 @@ const run = async () => {
 		console.log(`API connected at :${config.expressPort}`)
 	})
 
-	setInterval(GatherLogs, 60*15*1000) // gather logs every 15 mins by default
+
+	// TODO: enable on prod, for now i have fake data
+	// setInterval(GatherLogs, 60*5*1000) // gather logs every 5 mins by default
 }
 run()

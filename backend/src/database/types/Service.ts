@@ -45,6 +45,7 @@ export class ServiceClass {
 	@Field()
 	public updatedAt!: Date
 
+	@Field(() => [LogClass])
 	@prop({ ref: () => LogClass })
 	public logs!: Ref<LogClass>[]
 }

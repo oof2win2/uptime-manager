@@ -17,11 +17,18 @@ export type Scalars = {
 };
 
 
+export type LogClass = {
+  __typename?: 'LogClass';
+  id: Scalars['String'];
+  reachable: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  CreateService: ServiceClass;
-  DeleteService: ServiceClass;
-  ModifyService: ServiceClass;
+  CreateService?: Maybe<ServiceClass>;
+  DeleteService?: Maybe<ServiceClass>;
+  ModifyService?: Maybe<ServiceClass>;
 };
 
 
@@ -50,10 +57,16 @@ export type Query = {
   __typename?: 'Query';
   Services: Array<ServiceClass>;
   Service?: Maybe<ServiceClass>;
+  ServiceWithLogs?: Maybe<ServiceClass>;
 };
 
 
 export type QueryServiceArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryServiceWithLogsArgs = {
   id: Scalars['String'];
 };
 
@@ -66,7 +79,38 @@ export type ServiceClass = {
   socketType: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  logs: Array<LogClass>;
 };
+
+export type ServiceWithLogsQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type ServiceWithLogsQuery = (
+  { __typename?: 'Query' }
+  & { ServiceWithLogs?: Maybe<(
+    { __typename?: 'ServiceClass' }
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port'>
+    & { logs: Array<(
+      { __typename?: 'LogClass' }
+      & Pick<LogClass, 'id' | 'reachable' | 'createdAt'>
+    )> }
+  )> }
+);
+
+export type ServiceQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type ServiceQuery = (
+  { __typename?: 'Query' }
+  & { Service?: Maybe<(
+    { __typename?: 'ServiceClass' }
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port'>
+  )> }
+);
 
 export type ServicesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -80,6 +124,45 @@ export type ServicesQuery = (
 );
 
 
+export const ServiceWithLogsDocument = gql`
+    query ServiceWithLogs($id: String!) {
+  ServiceWithLogs(id: $id) {
+    id
+    name
+    url
+    createdAt
+    updatedAt
+    socketType
+    port
+    logs {
+      id
+      reachable
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useServiceWithLogsQuery(options: Omit<Urql.UseQueryArgs<ServiceWithLogsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<ServiceWithLogsQuery>({ query: ServiceWithLogsDocument, ...options });
+};
+export const ServiceDocument = gql`
+    query Service($id: String!) {
+  Service(id: $id) {
+    id
+    name
+    url
+    createdAt
+    updatedAt
+    socketType
+    port
+  }
+}
+    `;
+
+export function useServiceQuery(options: Omit<Urql.UseQueryArgs<ServiceQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<ServiceQuery>({ query: ServiceDocument, ...options });
+};
 export const ServicesDocument = gql`
     query Services {
   Services {

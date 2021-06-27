@@ -1,10 +1,10 @@
 {
   "name": "client",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test",
+    "eject": "react-scripts-ts eject",
     "lint": "eslint src/ --fix",
     "gen": "graphql-codegen --config codegen.yml"
   },
@@ -21,12 +21,16 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.4",
+    "@philipbaker4/color-utilities": "^1.0.1",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.5",
     "graphql": "^15.5.1",
+    "graphql-tag": "^2.12.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "^4.0.3",
+    "react-scripts-ts": "^3.1.0",
+    "react-tooltip": "^4.2.21",
     "urql": "^2.0.4"
   },
   "browserslist": {

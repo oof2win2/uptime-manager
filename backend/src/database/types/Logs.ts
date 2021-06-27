@@ -23,6 +23,9 @@ export class LogClass {
 	@Field()
 	@prop()
 	public reachable!: boolean
+
+	@Field()
+	public createdAt!: Date
 }
 const LogModel = getModelForClass(LogClass)
 export default LogModel

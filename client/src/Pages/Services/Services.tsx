@@ -1,5 +1,6 @@
-import { useServicesQuery } from "../../generated/graphql.d"
-import { CircularProgress } from "@material-ui/core"
+import { useServicesQuery } from "../../generated/graphql"
+import { LinearProgress } from "@material-ui/core"
+import Service from "../../Components/Service/service"
 
 interface ServicesProp {
 
@@ -7,15 +8,14 @@ interface ServicesProp {
 
 const Services: React.FC<ServicesProp> = ({ }) => {
 	const [{ fetching, data }] = useServicesQuery()
-	if (fetching) return (
+	if (fetching || !data) return (
 		<div>
-			<CircularProgress />
+			<LinearProgress />
 		</div>
 	)
-	console.log(data)
 	return (
 		<div>
-			Got the data.
+			{data.Services.map(service => <Service key={service.id} id={service.id} />)}
 		</div>
 	)
 }
