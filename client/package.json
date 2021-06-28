@@ -15,8 +15,13 @@
     "@graphql-codegen/typescript-operations": "1.18.2",
     "@graphql-codegen/typescript-urql": "^2.0.9",
     "@graphql-codegen/urql-introspection": "1.3.1",
+    "@types/eslint": "^7",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "eslint": "^7.29.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "typescript": "^4.3.4"
   },
   "dependencies": {
@@ -24,6 +29,8 @@
     "@philipbaker4/color-utilities": "^1.0.1",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.5",
+    "@use-it/interval": "^1.0.0",
+    "add": "^2.0.6",
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
     "react": "^17.0.2",
@@ -31,7 +38,8 @@
     "react-scripts": "^4.0.3",
     "react-scripts-ts": "^3.1.0",
     "react-tooltip": "^4.2.21",
-    "urql": "^2.0.4"
+    "urql": "^2.0.4",
+    "yarn": "^1.22.10"
   },
   "browserslist": {
     "production": [

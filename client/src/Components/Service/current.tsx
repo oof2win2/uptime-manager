@@ -1,12 +1,10 @@
-import React, { Fragment } from "react"
-import { ServiceClass, LogClass } from "src/generated/graphql"
-import {  getColorFromDataGradient } from "@philipbaker4/color-utilities"
+import React from "react"
+import { LogClass } from "src/generated/graphql"
 import "./current.css"
-import ReactDOMServer from 'react-dom/server'
+import Timer from "../timer/timer"
 
 const Current: React.FC<{log: LogClass}> = ({log}: {log: LogClass}) => {
 	const online = log.reachable
-	const timeString = new Date(log.createdAt).toDateString()
 	const calculateColor = (): string => {
 		const minColor = "#fc1505"
 		const maxColor = "#05fc19"
@@ -15,7 +13,9 @@ const Current: React.FC<{log: LogClass}> = ({log}: {log: LogClass}) => {
 	return (
 		<>
 		<p>Current status: {online ? "Online" : "Unreachable"}</p>
-		<p className="circle" style={{backgroundColor: calculateColor(), marginLeft: 16}}></p>
+		<svg width={24} height={24} style={{paddingTop: 14, paddingLeft: 5}}>
+			<circle r={12} fill={calculateColor()} cx={12} cy={12}></circle>
+		</svg>
 		</>
 	)
 }

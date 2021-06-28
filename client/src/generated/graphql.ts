@@ -145,7 +145,7 @@ export const ServiceWithLogsDocument = gql`
 
 export function useServiceWithLogsQuery(options: Omit<Urql.UseQueryArgs<ServiceWithLogsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServiceWithLogsQuery>({ query: ServiceWithLogsDocument, ...options });
-};
+}
 export const ServiceDocument = gql`
     query Service($id: String!) {
   Service(id: $id) {
@@ -162,7 +162,7 @@ export const ServiceDocument = gql`
 
 export function useServiceQuery(options: Omit<Urql.UseQueryArgs<ServiceQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServiceQuery>({ query: ServiceDocument, ...options });
-};
+}
 export const ServicesDocument = gql`
     query Services {
   Services {
@@ -179,4 +179,4 @@ export const ServicesDocument = gql`
 
 export function useServicesQuery(options: Omit<Urql.UseQueryArgs<ServicesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServicesQuery>({ query: ServicesDocument, ...options });
-};
+}

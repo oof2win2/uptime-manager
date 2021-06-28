@@ -1,11 +1,11 @@
-import React, { Fragment } from "react"
-import { ServiceClass, LogClass } from "src/generated/graphql"
+import React from "react"
+import { LogClass } from "src/generated/graphql"
 import {  getColorFromDataGradient } from "@philipbaker4/color-utilities"
 import "./day.css"
 import ReactDOMServer from 'react-dom/server'
 
 const Day: React.FC<{logs: LogClass[], pos: number}> = ({logs, pos}: {logs: LogClass[], pos: number}) => {
-	const percentageOnline = Math.round(logs.filter(log => log.reachable).length / logs.length * 100 * 10) / 10
+	const percentageOnline = `${Math.round(logs.filter(log => log.reachable).length / logs.length * 100 * 10) / 10}%`
 	const timeString = new Date(logs[0].createdAt).toDateString()
 	const dataTooltip = ReactDOMServer.renderToString(<div>
 			<p style={{font: "Open Sans", fontFamily: "sans-serif", fontSize: 20, textAlign: "left", marginBottom: 0}}>{percentageOnline}</p>

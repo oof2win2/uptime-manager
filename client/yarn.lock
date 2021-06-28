@@ -2981,7 +2981,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^7.2.6":
+"@types/eslint@npm:^7, @types/eslint@npm:^7.2.6":
   version: 7.2.13
   resolution: "@types/eslint@npm:7.2.13"
   dependencies:
@@ -3304,7 +3304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^4.5.0":
+"@typescript-eslint/eslint-plugin@npm:^4.28.0, @typescript-eslint/eslint-plugin@npm:^4.5.0":
   version: 4.28.0
   resolution: "@typescript-eslint/eslint-plugin@npm:4.28.0"
   dependencies:
@@ -3356,7 +3356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^4.5.0":
+"@typescript-eslint/parser@npm:^4.28.0, @typescript-eslint/parser@npm:^4.5.0":
   version: 4.28.0
   resolution: "@typescript-eslint/parser@npm:4.28.0"
   dependencies:
@@ -3471,6 +3471,15 @@ __metadata:
   peerDependencies:
     graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: 6e03f4ab98d3c38ad97c0fe763e6280f06502af627f3ffa8c6d4c69ad9a10bf101483311867279953c877302026dbe28cbea1518a509cd749d941c962e56bf9f
+  languageName: node
+  linkType: hard
+
+"@use-it/interval@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@use-it/interval@npm:1.0.0"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 5150adf141dfb5e4721ee0d70dc694df4b4e70fb060372ee1709171d024769482f6c47a5eb55f7826d43e851e2c0e7a593f27bcf705827f8de07e71a8eb19999
   languageName: node
   linkType: hard
 
@@ -3812,6 +3821,13 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 37720df0ecd48baf87506aff228aedc7e73379df9e9309f0b89aaff18bb3d08af892d47c0f19d5ef1723066ca74157b00adcfea9a62b21a493c91babb7d22bc3
+  languageName: node
+  linkType: hard
+
+"add@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "add@npm:2.0.6"
+  checksum: 8599798e63565ee9acb4c0d79485501a60450491c47830fa7bee6ad4f311a880e8f8417deeb69804dbb54765246fd704d3e34fa4ab1b57ed70ae00344ee9d00f
   languageName: node
   linkType: hard
 
@@ -6763,10 +6779,17 @@ __metadata:
     "@graphql-codegen/urql-introspection": 1.3.1
     "@material-ui/core": ^4.11.4
     "@philipbaker4/color-utilities": ^1.0.1
+    "@types/eslint": ^7
     "@types/jest": ^26.0.23
     "@types/node": ^15.12.5
     "@types/react": ^17.0.11
     "@types/react-dom": ^17.0.8
+    "@typescript-eslint/eslint-plugin": ^4.28.0
+    "@typescript-eslint/parser": ^4.28.0
+    "@use-it/interval": ^1.0.0
+    add: ^2.0.6
+    eslint: ^7.29.0
+    eslint-plugin-react-hooks: ^4.2.0
     graphql: ^15.5.1
     graphql-tag: ^2.12.5
     react: ^17.0.2
@@ -6776,6 +6799,7 @@ __metadata:
     react-tooltip: ^4.2.21
     typescript: ^4.3.4
     urql: ^2.0.4
+    yarn: ^1.22.10
   languageName: unknown
   linkType: soft
 
@@ -9275,7 +9299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.11.0":
+"eslint@npm:^7.11.0, eslint@npm:^7.29.0":
   version: 7.29.0
   resolution: "eslint@npm:7.29.0"
   dependencies:
@@ -23754,6 +23778,16 @@ typescript@^4.3.4:
     decamelize: ^1.0.0
     window-size: 0.1.0
   checksum: bc127cb21a83f099ca5685d238bc61ab08fd09b327ae0a3987cfa7ddb331582818d789c3b370e483b01a2a9006e5f7abedc5e767783237d051e36874159519b3
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^1.22.10":
+  version: 1.22.10
+  resolution: "yarn@npm:1.22.10"
+  bin:
+    yarn: bin/yarn.js
+    yarnpkg: bin/yarn.js
+  checksum: e43c2102576ac3d79f58f6cddc36726e39d54357bbdd2b9af8ad94d8368e63170555acb4652af08a04354e1a92555d5b293936f9d9b3c8b066872ac11f32cb29
   languageName: node
   linkType: hard
 
