@@ -1,6 +1,9 @@
 import ReactDOM from "react-dom"
 import React from "react"
-import { createClient, fetchExchange, Provider } from "urql"
+import { createClient, fetchExchange, Provider as UrqlProvider } from "urql"
+import ReduxStore from './redux/store'
+import { Provider as ReduxProvider } from 'react-redux'
+
 import App from "./app"
 
 const client = createClient({
@@ -14,9 +17,11 @@ const client = createClient({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<Provider value={client}>
+		<ReduxProvider store={ReduxStore}>
+		<UrqlProvider value={client}>
 			<App />
-		</Provider>
+		</UrqlProvider>
+		</ReduxProvider>
 	</React.StrictMode>,
 	document.getElementById("root")
 )

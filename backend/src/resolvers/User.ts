@@ -21,6 +21,12 @@ class UserResponse {
 }
 
 @ObjectType()
+class LogoutResponse {
+	@Field()
+	completed!: boolean
+}
+
+@ObjectType()
 class AuthURL {
 	@Field()
 	state!: string
@@ -56,10 +62,20 @@ export class UserResolver {
 				error: "session.userId is not a valid user ID"
 			}]
 		}
-		console.log(ctx.req.session.userId, "sending user")
 		return {
 			user: AppUser
 		}
+	}
+
+	@Mutation(() => LogoutResponse, {nullable: true})
+	Logout(
+		@Ctx() ctx: ApolloContext,
+	): Promise<LogoutResponse> {
+		return new Promise((resolve) => {
+			ctx.req.session.destroy(() => resolve({
+				completed: true
+			}))
+		})
 	}
 
 	@Mutation(() => UserResponse)
@@ -97,7 +113,6 @@ export class UserResolver {
 				error: "Could not find Discord user with AccessToken"
 			}]
 		}
-
 		const AppToken = await AuthCodeModel.findOne({ code: appToken }).exec()
 		const validAppToken = appToken ? AppToken?.code === appToken : false
 
@@ -105,7 +120,6 @@ export class UserResolver {
 		const ExistingAppUser = await UserModel.findOne({ discordUserId: DiscordUser.id }).exec()
 		if (ExistingAppUser) {
 			ctx.req.session.userId = ExistingAppUser._id
-			console.log(ctx.req.session, "session")
 			return {
 				user: ExistingAppUser
 			}

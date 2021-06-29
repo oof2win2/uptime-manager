@@ -36,12 +36,18 @@ export type LogClass = {
   createdAt: Scalars['DateTime'];
 };
 
+export type LogoutResponse = {
+  __typename?: 'LogoutResponse';
+  completed: Scalars['Boolean'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   CreateService?: Maybe<ServiceClass>;
   DeleteService?: Maybe<ServiceClass>;
   ModifyService?: Maybe<ServiceClass>;
   Login: UserResponse;
+  Logout?: Maybe<LogoutResponse>;
   SignupOrLogin: UserResponse;
 };
 
@@ -136,6 +142,17 @@ export type LoginMutation = (
   ) }
 );
 
+export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = (
+  { __typename?: 'Mutation' }
+  & { Logout?: Maybe<(
+    { __typename?: 'LogoutResponse' }
+    & Pick<LogoutResponse, 'completed'>
+  )> }
+);
+
 export type SignupOrLoginMutationVariables = Exact<{
   AccessToken: Scalars['String'];
   State: Scalars['String'];
@@ -228,6 +245,17 @@ export const LoginDocument = gql`
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
+export const LogoutDocument = gql`
+    mutation Logout {
+  Logout {
+    completed
+  }
+}
+    `;
+
+export function useLogoutMutation() {
+  return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
 export const SignupOrLoginDocument = gql`
     mutation SignupOrLogin($AccessToken: String!, $State: String!, $AppToken: String) {

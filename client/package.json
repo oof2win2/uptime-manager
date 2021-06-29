@@ -18,6 +18,7 @@
     "@types/eslint": "^7",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
+    "@types/react-redux": "^7",
     "@types/react-router": "^5",
     "@types/react-router-dom": "^5",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
@@ -29,6 +30,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@philipbaker4/color-utilities": "^1.0.1",
+    "@reduxjs/toolkit": "^1.6.0",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.5",
     "@use-it/interval": "^1.0.0",
@@ -37,10 +39,12 @@
     "graphql-tag": "^2.12.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-tooltip": "^4.2.21",
+    "redux-thunk": "^2.3.0",
     "urql": "^2.0.4",
     "use-react-router": "^1.0.7",
     "yarn": "^1.22.10"

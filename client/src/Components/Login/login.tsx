@@ -2,12 +2,9 @@ import { Dispatch, SetStateAction, useEffect } from "react"
 import { Snackbar, LinearProgress } from "@material-ui/core"
 import { UserClass, useSignupOrLoginMutation } from "src/generated/graphql"
 import { Redirect } from "react-router"
+import { setUser } from "src/redux/user"
 
-const Login: React.FC<{
-	setUser: Dispatch<SetStateAction<UserClass | null>>
-}> = ({ setUser }: {
-	setUser: Dispatch<SetStateAction<UserClass | null>>
-}) => {
+const Login: React.FC = () => {
 	const [{ data: SignupData, fetching }, SignupOrLogin] = useSignupOrLoginMutation()
 	const url = new URL(window.location.href)
 	const URLQuery = new URLSearchParams(url.search)
@@ -23,7 +20,7 @@ const Login: React.FC<{
 	}
 	useEffect(() => {
 		setUser(SignupData?.SignupOrLogin.user as UserClass)
-	}, [setUser, SignupData?.SignupOrLogin.user])
+	}, [SignupData?.SignupOrLogin.user])
 
 	if (fetching) return (
 		<div style={{paddingTop: 32}}>
@@ -35,7 +32,7 @@ const Login: React.FC<{
 	const user = SignupData?.SignupOrLogin.user
 
 	if (SignupData?.SignupOrLogin.errors) {
-		console.log("should show snackbar error", SignupData.SignupOrLogin.errors)
+		console.log("should show snackbar error", SignupData.SignupOrLogin)
 		return (
 			<div>
 			<Snackbar

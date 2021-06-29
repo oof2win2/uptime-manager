@@ -5,39 +5,46 @@ import Navbar from "./Components/Navbar/navbar"
 import Login from "./Components/Login/login"
 import { useSignupOrLoginMutation, UserClass, useGenerateAuthUrlQuery, useLoginMutation } from "./generated/graphql"
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
-import { useState } from "react"
 import { useEffect } from "react"
+import ServiceManager from "./Pages/ServiceManager/ServiceManager"
+import { setUser } from "./redux/user"
+import { useAppSelector, useAppDispatch } from "./redux/store"
+import { useDispatch } from "react-redux"
 
 const App = (): JSX.Element => {
-	const [user, setUser] = useState<UserClass | null>(null)
-	const [{ data: SignupData }] = useSignupOrLoginMutation()
-	const [{ data: LoginData, fetching: LoginFetching, error }, fetchLoginData] = useLoginMutation()
+	const [{ data: LoginData }, fetchLoginData] = useLoginMutation()
 	const [{ data: AuthUrlData }] = useGenerateAuthUrlQuery()
 	const pages = new Map<string, string>([
-		["Services", "/services"]
+		["Services", "/services"],
+		["Service Manager", "/servicemanager"]
 	])
 	const currentPage = {
 		page: "Services",
 		location: "/services"
 	}
-	const onNavbarClick = (evt: React.MouseEvent<HTMLElement>) => {
-		console.log(evt.currentTarget)
-	}
-
-	if (SignupData?.SignupOrLogin.user) setUser(SignupData.SignupOrLogin.user as UserClass)
-	if (LoginData?.Login.user) setUser(LoginData.Login.user as UserClass)
+	useEffect(() => {
+		if (!user) fetchLoginData()
+	}, [])
+	const user = useAppSelector((state) => state.user)
+	const dispatch = useDispatch()
+	if (LoginData?.Login.user?.discordUserId)
+		dispatch(setUser(LoginData.Login.user as UserClass))
+	// if (AuthUrlData?.GenerateAuthURL.url)
 
 	return (
 		<Router>
-			<Navbar pages={pages} currentPage={currentPage} onClick={onNavbarClick} user={user} authUrlData={AuthUrlData?.GenerateAuthURL} />
+			<Navbar pages={pages} currentPage={currentPage} />
 			<Route exact path="/">
 				<Redirect to="/services" />
 			</Route>
 			<Route path="/authed">
-				<Login setUser={setUser} />
+				<Login />
 			</Route>
 			<Route path="/services">
 				<Services />
+			</Route>
+			<Route path="/servicemanager">
+				<ServiceManager />
 			</Route>
 		</Router>
 	)
