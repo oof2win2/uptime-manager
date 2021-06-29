@@ -47,9 +47,6 @@ const run = async () => {
 	})
 
 	const app = express()
-	app.use(cors())
-
-
 
 	const DiscordOAuth2 = new DiscordOAuth2Client({
 		id: ENV.DISCORD_CLIENTID,
@@ -67,7 +64,7 @@ const run = async () => {
 			cookie: {
 				maxAge: 1000 * 86400 * 365, // persist cookie for 1 year
 				httpOnly: true,
-				sameSite: "lax",	// 
+				sameSite: "none",	// 
 				secure: __prod__,	// cookie works only in https
 			},
 			saveUninitialized: false,
@@ -76,7 +73,6 @@ const run = async () => {
 		})
 	)
 
-	app.use(httpContext.middleware)
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
@@ -90,7 +86,14 @@ const run = async () => {
 		})
 	})
 
-	apolloServer.applyMiddleware({ app })
+
+	// cors didnt work with it, that was the most annoying thing EVER to fix
+	apolloServer.applyMiddleware({
+		app, cors: {
+			origin: "http://localhost:3000",
+			credentials: true
+		}
+	})
 
 	app.listen(ENV.EXPRESS_PORT || 3000, () => {
 		console.log(`API connected at :${ENV.EXPRESS_PORT || 3000}`)

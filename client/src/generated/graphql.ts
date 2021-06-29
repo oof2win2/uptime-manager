@@ -16,6 +16,18 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type AuthUrl = {
+  __typename?: 'AuthURL';
+  state: Scalars['String'];
+  url: Scalars['String'];
+};
+
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  error: Scalars['String'];
+};
 
 export type LogClass = {
   __typename?: 'LogClass';
@@ -29,6 +41,8 @@ export type Mutation = {
   CreateService?: Maybe<ServiceClass>;
   DeleteService?: Maybe<ServiceClass>;
   ModifyService?: Maybe<ServiceClass>;
+  Login: UserResponse;
+  SignupOrLogin: UserResponse;
 };
 
 
@@ -53,11 +67,19 @@ export type MutationModifyServiceArgs = {
   id: Scalars['String'];
 };
 
+
+export type MutationSignupOrLoginArgs = {
+  AppToken?: Maybe<Scalars['String']>;
+  State: Scalars['String'];
+  AccessToken: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   Services: Array<ServiceClass>;
   Service?: Maybe<ServiceClass>;
   ServiceWithLogs?: Maybe<ServiceClass>;
+  GenerateAuthURL: AuthUrl;
 };
 
 
@@ -81,6 +103,70 @@ export type ServiceClass = {
   updatedAt: Scalars['DateTime'];
   logs: Array<LogClass>;
 };
+
+export type UserClass = {
+  __typename?: 'UserClass';
+  discordUserId: Scalars['String'];
+  discordUsername: Scalars['String'];
+  allowWriteAccess: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  user?: Maybe<UserClass>;
+};
+
+export type LoginMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { Login: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, user?: Maybe<(
+      { __typename?: 'UserClass' }
+      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+    )> }
+  ) }
+);
+
+export type SignupOrLoginMutationVariables = Exact<{
+  AccessToken: Scalars['String'];
+  State: Scalars['String'];
+  AppToken?: Maybe<Scalars['String']>;
+}>;
+
+
+export type SignupOrLoginMutation = (
+  { __typename?: 'Mutation' }
+  & { SignupOrLogin: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, user?: Maybe<(
+      { __typename?: 'UserClass' }
+      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+    )> }
+  ) }
+);
+
+export type GenerateAuthUrlQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GenerateAuthUrlQuery = (
+  { __typename?: 'Query' }
+  & { GenerateAuthURL: (
+    { __typename?: 'AuthURL' }
+    & Pick<AuthUrl, 'url' | 'state'>
+  ) }
+);
 
 export type ServiceWithLogsQueryVariables = Exact<{
   id: Scalars['String'];
@@ -124,6 +210,56 @@ export type ServicesQuery = (
 );
 
 
+export const LoginDocument = gql`
+    mutation Login {
+  Login {
+    errors {
+      field
+      error
+    }
+    user {
+      discordUserId
+      discordUsername
+      allowWriteAccess
+    }
+  }
+}
+    `;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
+export const SignupOrLoginDocument = gql`
+    mutation SignupOrLogin($AccessToken: String!, $State: String!, $AppToken: String) {
+  SignupOrLogin(AccessToken: $AccessToken, State: $State, AppToken: $AppToken) {
+    errors {
+      field
+      error
+    }
+    user {
+      discordUserId
+      discordUsername
+      allowWriteAccess
+    }
+  }
+}
+    `;
+
+export function useSignupOrLoginMutation() {
+  return Urql.useMutation<SignupOrLoginMutation, SignupOrLoginMutationVariables>(SignupOrLoginDocument);
+};
+export const GenerateAuthUrlDocument = gql`
+    query GenerateAuthURL {
+  GenerateAuthURL {
+    url
+    state
+  }
+}
+    `;
+
+export function useGenerateAuthUrlQuery(options: Omit<Urql.UseQueryArgs<GenerateAuthUrlQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GenerateAuthUrlQuery>({ query: GenerateAuthUrlDocument, ...options });
+};
 export const ServiceWithLogsDocument = gql`
     query ServiceWithLogs($id: String!) {
   ServiceWithLogs(id: $id) {
@@ -145,7 +281,7 @@ export const ServiceWithLogsDocument = gql`
 
 export function useServiceWithLogsQuery(options: Omit<Urql.UseQueryArgs<ServiceWithLogsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServiceWithLogsQuery>({ query: ServiceWithLogsDocument, ...options });
-}
+};
 export const ServiceDocument = gql`
     query Service($id: String!) {
   Service(id: $id) {
@@ -162,7 +298,7 @@ export const ServiceDocument = gql`
 
 export function useServiceQuery(options: Omit<Urql.UseQueryArgs<ServiceQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServiceQuery>({ query: ServiceDocument, ...options });
-}
+};
 export const ServicesDocument = gql`
     query Services {
   Services {
@@ -179,4 +315,4 @@ export const ServicesDocument = gql`
 
 export function useServicesQuery(options: Omit<Urql.UseQueryArgs<ServicesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServicesQuery>({ query: ServicesDocument, ...options });
-}
+};

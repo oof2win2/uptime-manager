@@ -1,0 +1,13 @@
+mutation SignupOrLogin($AccessToken: String!, $State: String!, $AppToken: String) {
+	SignupOrLogin(AccessToken: $AccessToken, State: $State, AppToken: $AppToken) {
+    errors {
+      field
+      error
+		}
+    user {
+      discordUserId
+      discordUsername
+      allowWriteAccess
+    }
+	}
+}

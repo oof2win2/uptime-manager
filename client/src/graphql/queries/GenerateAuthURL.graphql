@@ -1,0 +1,6 @@
+query GenerateAuthURL {
+	GenerateAuthURL {
+		url
+		state
+	}
+}

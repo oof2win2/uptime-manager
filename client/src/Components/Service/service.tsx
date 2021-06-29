@@ -15,7 +15,6 @@ const Service: React.FC<{ id: string }> = ({ id }: { id: string }) => {
 			<CircularProgress />
 		</>
 	)
-	console.log(data)
 	if (!data || !data.ServiceWithLogs) return (
 		<>Error fetching service with ID of {id}</>
 	)
@@ -39,15 +38,15 @@ const Service: React.FC<{ id: string }> = ({ id }: { id: string }) => {
 
 
 	return (
-		<div className="serviceBlock">
-			<p style={{ marginRight: "10px", marginTop: 12, paddingRight: 10 }}>{data.ServiceWithLogs.name}</p>
-			<svg width={19.8*Array.from(days.entries()).length} height={32} style={{ display: "inline-block", paddingTop: 5 }}>
+		<div style={{display: "inline-block"}}>
+			<p style={{ marginRight: "10px", marginTop: 12, paddingRight: 10, display: "inline" }}>{data.ServiceWithLogs.name}</p>
+			<svg width={19.8*Array.from(days.entries()).length} height={32} style={{ display: "inline", paddingTop: 5 }}>
 				{Array.from(days.entries()).map((data, i) => {
 					const logs = data[1]
 					return <Day logs={logs} pos={i} key={i} />
 				})}
 			</svg>
-			<Current log={latestDate.log}/>
+			<Current log={latestDate.log} style={{display: "inline"}}/>
 			<ReactTooltip place="bottom" class="tooltip" html={true} />
 		</div>
 	)

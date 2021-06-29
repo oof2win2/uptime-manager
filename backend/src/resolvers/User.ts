@@ -36,42 +36,40 @@ export class UserResolver {
 	): AuthURL {
 		return ctx.oauth.authCodeLink
 	}
+
+
 	@Mutation(() => UserResponse)
 	async Login(
 		@Ctx() ctx: ApolloContext,
-		@Arg("AccessToken", () => String) code: string,
-		@Arg("State", () => String) state: string,
 	): Promise<UserResponse> {
-		console.log("authing...")
-		const access = await ctx.oauth.getAccess(code)
-		const DiscordUser = await ctx.oauth.getUser(access)
-
-		if (!DiscordUser) return {
+		console.log("login")
+		if (!ctx.req.session.userId) return {
 			errors: [{
-				field: "AccessToken",
-				error: "Could not find Discord user with AccessToken"
+				field: "session.userId",
+				error: "Session is no longer valid"
 			}]
 		}
-		const AppUser = await UserModel.findOne({discordUserId: DiscordUser.id})
+		const AppUser = await UserModel.findOne({ _id: ctx.req.session.userId })
 		if (!AppUser) return {
 			errors: [{
-				field: "AccessToken",
-				error: "AccessToken does not yield a Discord user that matches a user"
+				field: "session.userId",
+				error: "session.userId is not a valid user ID"
 			}]
 		}
+		console.log(ctx.req.session.userId, "sending user")
 		return {
 			user: AppUser
 		}
 	}
-	
+
 	@Mutation(() => UserResponse)
-	async Signup(
+	async SignupOrLogin(
 		@Ctx() ctx: ApolloContext,
 		@Arg("AccessToken", () => String) code: string,
 		@Arg("State", () => String) state: string,
-		@Arg("AppToken", () => String, {nullable: true}) appToken?: string
+		@Arg("AppToken", () => String, { nullable: true }) appToken?: string
 	): Promise<UserResponse> {
-		let DiscordUser: User|null
+		let DiscordUser: User | null
 		let access: string
 		try {
 			access = await ctx.oauth.getAccess(code)
@@ -100,15 +98,17 @@ export class UserResolver {
 			}]
 		}
 
-		const AppToken = await AuthCodeModel.findOne({code: appToken}).exec()
+		const AppToken = await AuthCodeModel.findOne({ code: appToken }).exec()
 		const validAppToken = appToken ? AppToken?.code === appToken : false
 
-		const ExistingAppUser = await UserModel.findOne({discordUserId: DiscordUser.id}).exec()
-		if (ExistingAppUser) return {
-			errors: [{
-				field: "AccessToken",
-				error: "User with this Discord UserID already exists"
-			}]
+		// if their user already exists then return them
+		const ExistingAppUser = await UserModel.findOne({ discordUserId: DiscordUser.id }).exec()
+		if (ExistingAppUser) {
+			ctx.req.session.userId = ExistingAppUser._id
+			console.log(ctx.req.session, "session")
+			return {
+				user: ExistingAppUser
+			}
 		}
 
 		const AppUser = await UserModel.create({
@@ -118,6 +118,7 @@ export class UserResolver {
 			createdAt: Date.now(),
 			updatedAt: Date.now()
 		})
+		ctx.req.session.userId = AppUser._id
 		return {
 			user: AppUser,
 			errors: (appToken && !validAppToken) ? [{

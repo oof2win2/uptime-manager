@@ -1,0 +1,13 @@
+mutation Login {
+	Login {
+		errors {
+			field
+			error
+		}
+		user {
+			discordUserId
+			discordUsername
+			allowWriteAccess
+		}
+	}
+}
