@@ -1,26 +1,24 @@
-import { Dispatch, SetStateAction, useEffect } from "react"
+import { useEffect } from "react"
 import { Snackbar, LinearProgress } from "@material-ui/core"
 import { UserClass, useSignupOrLoginMutation } from "src/generated/graphql"
 import { Redirect } from "react-router"
 import { setUser } from "src/redux/user"
+import { useAppDispatch } from "src/redux/store"
 
 const Login: React.FC = () => {
 	const [{ data: SignupData, fetching }, SignupOrLogin] = useSignupOrLoginMutation()
+	const dispatch = useAppDispatch()
 	const url = new URL(window.location.href)
 	const URLQuery = new URLSearchParams(url.search)
 	if (URLQuery.get("code") && URLQuery.get("state") && !fetching && !SignupData) {
-		console.log("logging in...", !fetching, !SignupData, {
-			AccessToken: URLQuery.get("code") as string,
-			State: URLQuery.get("state") as string,
-		})
 		SignupOrLogin({
 			AccessToken: URLQuery.get("code") as string,
 			State: URLQuery.get("state") as string,
 		})
 	}
 	useEffect(() => {
-		setUser(SignupData?.SignupOrLogin.user as UserClass)
-	}, [SignupData?.SignupOrLogin.user])
+		dispatch(setUser(SignupData?.SignupOrLogin.user as UserClass))
+	}, [dispatch, SignupData?.SignupOrLogin.user])
 
 	if (fetching) return (
 		<div style={{paddingTop: 32}}>

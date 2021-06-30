@@ -1,16 +1,11 @@
 import User from "@2pg/oauth/lib/types/user"
-import { Resolver, Query, Arg, Mutation, Ctx, ObjectType, Field } from "type-graphql"
+import { Resolver, Query, Arg, Mutation, Ctx, ObjectType, Field, Subscription, Root, ResolverFilterData } from "type-graphql"
 import AuthCodeModel from "../database/types/AuthCodes"
 import UserModel, { UserClass } from "../database/types/User"
-import { ApolloContext } from "../types"
+import { ApolloContext, FieldError } from "../types"
 
-@ObjectType()
-class FieldError {
-	@Field()
-	field!: string
-	@Field()
-	error!: string
-}
+type UserSubscriber = Pick<UserClass, "discordUserId">
+
 @ObjectType()
 class UserResponse {
 	@Field(() => [FieldError], { nullable: true })
@@ -48,7 +43,6 @@ export class UserResolver {
 	async Login(
 		@Ctx() ctx: ApolloContext,
 	): Promise<UserResponse> {
-		console.log("login")
 		if (!ctx.req.session.userId) return {
 			errors: [{
 				field: "session.userId",
@@ -127,10 +121,11 @@ export class UserResolver {
 
 		const AppUser = await UserModel.create({
 			discordUserId: DiscordUser.id,
+			discordUserTag: DiscordUser.tag,
 			discordUsername: DiscordUser.username,
 			allowWriteAccess: validAppToken,
 			createdAt: Date.now(),
-			updatedAt: Date.now()
+			updatedAt: Date.now(),
 		})
 		ctx.req.session.userId = AppUser._id
 		return {
@@ -140,5 +135,72 @@ export class UserResolver {
 				error: "AppToken was invalid"
 			}] : undefined
 		}
+	}
+
+	@Mutation(() => UserResponse)
+	async AllowWriteAccess(
+		@Arg("code", () => String) code: string,
+		@Arg("discordUserId", () => String) discordUserId: string,
+	): Promise<UserResponse> {
+		const AccessCode = await AuthCodeModel.findOne({code: code}).exec()
+		if (!AccessCode) return {
+			errors: [{
+				field: "code",
+				error: "code is an invalid access code"
+			}]
+		}
+		const User = await UserModel.findOne({discordUserId: discordUserId}).exec()
+		if (!User) return {
+			errors: [{
+				field: "discordUserId",
+				error: "User not in database"
+			}]
+		}
+
+		User.allowWriteAccess = true
+		await User.save()
+		this.updateUserSubscription(User)
+		return {
+			user: User
+		}
+	}
+	@Mutation(() => UserResponse)
+	async ForbidWriteAccess(
+		@Arg("code", () => String) code: string,
+		@Arg("discordUserId", () => String) discordUserId: string,
+	): Promise<UserResponse> {
+		const AccessCode = await AuthCodeModel.findOne({code: code}).exec()
+		if (!AccessCode) return {
+			errors: [{
+				field: "code",
+				error: "code is an invalid access code"
+			}]
+		}
+		const User = await UserModel.findOne({discordUserId: discordUserId}).exec()
+		if (!User) return {
+			errors: [{
+				field: "discordUserId",
+				error: "User not in database"
+			}]
+		}
+
+		User.allowWriteAccess = false
+		await User.save()
+		this.updateUserSubscription(User)
+		return {
+			user: User
+		}
+	}
+
+	@Subscription(() => UserClass, {
+		topics: "USER_UPDATE",
+		filter: ({payload, args}: ResolverFilterData<UserClass, UserSubscriber, ApolloContext>) => {
+			return payload.discordUserId === args.discordUserId
+		}
+	})
+	updateUserSubscription(
+		@Root() user: UserClass
+	): UserClass {
+		return user
 	}
 }

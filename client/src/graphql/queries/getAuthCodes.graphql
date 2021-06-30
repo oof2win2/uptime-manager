@@ -1,0 +1,12 @@
+query getAuthCodes {
+	getAuthCodes {
+		errors {
+      field
+      error
+		}
+    codes {
+      code
+      createdAt
+    }
+  }
+}

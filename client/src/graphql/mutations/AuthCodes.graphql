@@ -1,0 +1,24 @@
+mutation createAuthCode {
+  createAuthCode {
+    errors {
+      field
+      error
+		}
+    code {
+      createdAt
+    }
+  }
+}
+
+mutation removeAuthCode($code: String!) {
+  removeAuthCode(code:$code) {
+    errors {
+      field
+      error
+		}
+    code {
+      code
+      createdAt
+    }
+  }
+}

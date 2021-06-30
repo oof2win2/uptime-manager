@@ -1,6 +1,8 @@
 import { AppBar, Toolbar, IconButton, Link, Button } from "@material-ui/core"
-import { AuthUrl, useLogoutMutation } from "src/generated/graphql"
-import { useAppSelector } from "src/redux/store"
+import { useEffect } from "react"
+import { useLogoutMutation } from "src/generated/graphql"
+import { useAppDispatch, useAppSelector } from "src/redux/store"
+import { logoutUser } from "src/redux/user"
 
 const Navbar: React.FC<{
 	pages: Map<string, string>,
@@ -11,11 +13,15 @@ const Navbar: React.FC<{
 }) => {
 	const user = useAppSelector((state) => state.user)
 	const AuthUrl = useAppSelector((state) => state.global.AuthUrl)
-	const [, LogoutDatabase] = useLogoutMutation()
+	const [{data: LogoutData}, LogoutDatabase] = useLogoutMutation()
+	const dispatch = useAppDispatch()
 
 	const logout = () => {
 		LogoutDatabase()
 	}
+	useEffect(() => {
+		dispatch(logoutUser())
+	}, [dispatch, LogoutData])
  
 	return (
 		<AppBar position={"static"}>

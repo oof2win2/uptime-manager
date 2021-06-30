@@ -13,6 +13,7 @@ const ENV = cleanEnv(process.env, {
 	DISCORD_REDIRECTURI: url({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
 	MONGOOSE_URI: url({ example: "mongodb+srv://dbUse:dbPassword@databaseLocation/defaultDatabaseName" }),
 	EXPRESS_PORT: port({ default: 5555 }),
+	WS_PORT: port({ default: 5556 }),
 	SESSION_SECRET: str()
 })
 
@@ -22,20 +23,22 @@ import { ApolloServer } from "apollo-server-express"
 import express from "express"
 import { buildSchema } from "type-graphql"
 import mongoose from "mongoose"
-import { ServiceResolver } from "./resolvers/Service"
 import GatherLogs from "./Logger"
-import { LogResolver } from "./resolvers/Logs"
-import cors from "cors"
-import httpContext from "express-http-context"
 import session from "express-session"
 import connectsqlite from "connect-sqlite3"
-
 import { Client as DiscordOAuth2Client } from "@2pg/oauth"
+import { createServer } from 'http'
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
 
+import { ServiceResolver } from "./resolvers/Service"
+import { LogResolver } from "./resolvers/Logs"
+import { UserResolver } from "./resolvers/User"
+import { AuthCodeResolver } from './resolvers/AuthCodes'
 
 import { COOKIE_NAME, __prod__ } from "./constants"
 import { ApolloContext } from "./types"
-import { UserResolver } from "./resolvers/User"
+
 
 const run = async () => {
 	mongoose.connect(ENV.MONGOOSE_URI as string, {
@@ -76,9 +79,15 @@ const run = async () => {
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [ServiceResolver, LogResolver, UserResolver],
+			resolvers: [ServiceResolver, LogResolver, UserResolver, AuthCodeResolver],
 			validate: false
 		}),
+		subscriptions: {
+			path: '/subscriptions',
+			onConnect: () => {
+				console.log("connected!")
+			},
+		},
 		context: ({ req, res }): ApolloContext => ({
 			req,
 			res,
@@ -98,6 +107,25 @@ const run = async () => {
 	app.listen(ENV.EXPRESS_PORT || 3000, () => {
 		console.log(`API connected at :${ENV.EXPRESS_PORT || 3000}`)
 	})
+
+	// const WebSocketServer = createServer((request, response) => {
+	// 	response.writeHead(404);
+	// 	response.end();
+	// });
+	// WebSocketServer.listen(ENV.WS_PORT, () => {
+	// 	console.log(`WebSocket server now running at :${ENV.WS_PORT}`)
+	// })
+	// const subscriptionServer = SubscriptionServer.create(
+	// 	{
+	// 		schema,
+	// 		execute,
+	// 		subscribe,
+	// 	},
+	// 	{
+	// 		server: WebSocketServer,
+	// 		path: '/graphql',
+	// 	},
+	// );
 
 
 	// TODO: enable on prod, for now i have fake data

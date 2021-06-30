@@ -1,0 +1,27 @@
+mutation AllowWriteAccess($code: String!, $discordUserId: String!) {
+	AllowWriteAccess(code: $code, discordUserId: $discordUserId) {
+		errors {
+			field
+			error
+		}
+		user {
+			discordUserId
+			discordUsername
+			allowWriteAccess
+		}
+	}
+}
+
+mutation ForbidWriteAccess($code: String!, $discordUserId: String!) {
+	AllowWriteAccess(code: $code, discordUserId: $discordUserId) {
+		errors {
+			field
+			error
+		}
+		user {
+			discordUserId
+			discordUsername
+			allowWriteAccess
+		}
+	}
+}

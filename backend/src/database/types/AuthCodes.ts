@@ -1,4 +1,5 @@
 import { getModelForClass, modelOptions, pre, prop, Ref } from "@typegoose/typegoose"
+import { Field, ObjectType } from "type-graphql"
 import { getUserID } from '../../functions'
 
 export type SocketType = "udp" | "tcp"
@@ -9,17 +10,21 @@ export type SocketType = "udp" | "tcp"
 	next()
 })
 
+@ObjectType()
 @modelOptions({
 	schemaOptions: {
 		timestamps: true
 	}
 })
 export class AuthCodeClass {
+	@Field()
 	@prop()
 	public code!: string
 
 	// set by mongoose
+	@Field()
 	public createdAt!: Date
+	@Field()
 	public updatedAt!: Date
 }
 const AuthCodeModel = getModelForClass(AuthCodeClass)

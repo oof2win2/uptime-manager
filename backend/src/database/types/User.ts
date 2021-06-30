@@ -24,6 +24,10 @@ export class UserClass {
 
 	@Field()
 	@prop()
+	public discordUserTag!: string
+
+	@Field()
+	@prop()
 	public discordUsername!: string
 
 	@Field()

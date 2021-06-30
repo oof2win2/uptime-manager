@@ -16,6 +16,20 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type AuthCodeClass = {
+  __typename?: 'AuthCodeClass';
+  code: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type AuthCodeResponse = {
+  __typename?: 'AuthCodeResponse';
+  errors?: Maybe<Array<FieldError>>;
+  code?: Maybe<AuthCodeClass>;
+  codes: Array<AuthCodeClass>;
+};
+
 export type AuthUrl = {
   __typename?: 'AuthURL';
   state: Scalars['String'];
@@ -49,6 +63,10 @@ export type Mutation = {
   Login: UserResponse;
   Logout?: Maybe<LogoutResponse>;
   SignupOrLogin: UserResponse;
+  AllowWriteAccess: UserResponse;
+  ForbidWriteAccess: UserResponse;
+  createAuthCode: AuthCodeResponse;
+  removeAuthCode: AuthCodeResponse;
 };
 
 
@@ -80,12 +98,30 @@ export type MutationSignupOrLoginArgs = {
   AccessToken: Scalars['String'];
 };
 
+
+export type MutationAllowWriteAccessArgs = {
+  discordUserId: Scalars['String'];
+  code: Scalars['String'];
+};
+
+
+export type MutationForbidWriteAccessArgs = {
+  discordUserId: Scalars['String'];
+  code: Scalars['String'];
+};
+
+
+export type MutationRemoveAuthCodeArgs = {
+  code: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   Services: Array<ServiceClass>;
   Service?: Maybe<ServiceClass>;
   ServiceWithLogs?: Maybe<ServiceClass>;
   GenerateAuthURL: AuthUrl;
+  getAuthCodes: AuthCodeResponse;
 };
 
 
@@ -110,9 +146,15 @@ export type ServiceClass = {
   logs: Array<LogClass>;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  updateUserSubscription: UserClass;
+};
+
 export type UserClass = {
   __typename?: 'UserClass';
   discordUserId: Scalars['String'];
+  discordUserTag: Scalars['String'];
   discordUsername: Scalars['String'];
   allowWriteAccess: Scalars['Boolean'];
   createdAt: Scalars['DateTime'];
@@ -124,6 +166,82 @@ export type UserResponse = {
   errors?: Maybe<Array<FieldError>>;
   user?: Maybe<UserClass>;
 };
+
+export type AllowWriteAccessMutationVariables = Exact<{
+  code: Scalars['String'];
+  discordUserId: Scalars['String'];
+}>;
+
+
+export type AllowWriteAccessMutation = (
+  { __typename?: 'Mutation' }
+  & { AllowWriteAccess: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, user?: Maybe<(
+      { __typename?: 'UserClass' }
+      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+    )> }
+  ) }
+);
+
+export type ForbidWriteAccessMutationVariables = Exact<{
+  code: Scalars['String'];
+  discordUserId: Scalars['String'];
+}>;
+
+
+export type ForbidWriteAccessMutation = (
+  { __typename?: 'Mutation' }
+  & { AllowWriteAccess: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, user?: Maybe<(
+      { __typename?: 'UserClass' }
+      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+    )> }
+  ) }
+);
+
+export type CreateAuthCodeMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateAuthCodeMutation = (
+  { __typename?: 'Mutation' }
+  & { createAuthCode: (
+    { __typename?: 'AuthCodeResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, code?: Maybe<(
+      { __typename?: 'AuthCodeClass' }
+      & Pick<AuthCodeClass, 'createdAt'>
+    )> }
+  ) }
+);
+
+export type RemoveAuthCodeMutationVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+
+export type RemoveAuthCodeMutation = (
+  { __typename?: 'Mutation' }
+  & { removeAuthCode: (
+    { __typename?: 'AuthCodeResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, code?: Maybe<(
+      { __typename?: 'AuthCodeClass' }
+      & Pick<AuthCodeClass, 'code' | 'createdAt'>
+    )> }
+  ) }
+);
 
 export type LoginMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -202,6 +320,23 @@ export type ServiceWithLogsQuery = (
   )> }
 );
 
+export type GetAuthCodesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAuthCodesQuery = (
+  { __typename?: 'Query' }
+  & { getAuthCodes: (
+    { __typename?: 'AuthCodeResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>>, codes: Array<(
+      { __typename?: 'AuthCodeClass' }
+      & Pick<AuthCodeClass, 'code' | 'createdAt'>
+    )> }
+  ) }
+);
+
 export type ServiceQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -227,6 +362,79 @@ export type ServicesQuery = (
 );
 
 
+export const AllowWriteAccessDocument = gql`
+    mutation AllowWriteAccess($code: String!, $discordUserId: String!) {
+  AllowWriteAccess(code: $code, discordUserId: $discordUserId) {
+    errors {
+      field
+      error
+    }
+    user {
+      discordUserId
+      discordUsername
+      allowWriteAccess
+    }
+  }
+}
+    `;
+
+export function useAllowWriteAccessMutation() {
+  return Urql.useMutation<AllowWriteAccessMutation, AllowWriteAccessMutationVariables>(AllowWriteAccessDocument);
+};
+export const ForbidWriteAccessDocument = gql`
+    mutation ForbidWriteAccess($code: String!, $discordUserId: String!) {
+  AllowWriteAccess(code: $code, discordUserId: $discordUserId) {
+    errors {
+      field
+      error
+    }
+    user {
+      discordUserId
+      discordUsername
+      allowWriteAccess
+    }
+  }
+}
+    `;
+
+export function useForbidWriteAccessMutation() {
+  return Urql.useMutation<ForbidWriteAccessMutation, ForbidWriteAccessMutationVariables>(ForbidWriteAccessDocument);
+};
+export const CreateAuthCodeDocument = gql`
+    mutation createAuthCode {
+  createAuthCode {
+    errors {
+      field
+      error
+    }
+    code {
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useCreateAuthCodeMutation() {
+  return Urql.useMutation<CreateAuthCodeMutation, CreateAuthCodeMutationVariables>(CreateAuthCodeDocument);
+};
+export const RemoveAuthCodeDocument = gql`
+    mutation removeAuthCode($code: String!) {
+  removeAuthCode(code: $code) {
+    errors {
+      field
+      error
+    }
+    code {
+      code
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useRemoveAuthCodeMutation() {
+  return Urql.useMutation<RemoveAuthCodeMutation, RemoveAuthCodeMutationVariables>(RemoveAuthCodeDocument);
+};
 export const LoginDocument = gql`
     mutation Login {
   Login {
@@ -309,6 +517,24 @@ export const ServiceWithLogsDocument = gql`
 
 export function useServiceWithLogsQuery(options: Omit<Urql.UseQueryArgs<ServiceWithLogsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<ServiceWithLogsQuery>({ query: ServiceWithLogsDocument, ...options });
+};
+export const GetAuthCodesDocument = gql`
+    query getAuthCodes {
+  getAuthCodes {
+    errors {
+      field
+      error
+    }
+    codes {
+      code
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useGetAuthCodesQuery(options: Omit<Urql.UseQueryArgs<GetAuthCodesQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetAuthCodesQuery>({ query: GetAuthCodesDocument, ...options });
 };
 export const ServiceDocument = gql`
     query Service($id: String!) {

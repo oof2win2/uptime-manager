@@ -5,6 +5,7 @@ import ReduxStore from './redux/store'
 import { Provider as ReduxProvider } from 'react-redux'
 
 import App from "./app"
+// TODO: create global styles
 
 const client = createClient({
 	url: "http://localhost:5555/graphql",
