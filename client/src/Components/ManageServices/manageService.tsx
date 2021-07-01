@@ -35,7 +35,10 @@ const ManagerService: React.FC<ManagerServiceProp> = ({service, deleteService}) 
 		<Paper className={styles.innerPaper} style={{maxWidth: 8*32, minWidth: 8*32, alignItems: "center", marginLeft:8}}>
 			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8, paddingTop:16}}>Service ID: {service.id}</p>
 			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Service name: {service.name}</p>
+			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Service URL: {service.url}</p>
 			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Created at: {new Date(service.createdAt).toLocaleString()}</p>
+			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Socket type: {service.socketType}</p>
+			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Port: {service.port}</p>
 			<IconButton onClick={promptRemove} style={{alignSelf: "center"}}>
 				<DeleteIcon />
 			</IconButton>
