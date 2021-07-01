@@ -24,7 +24,7 @@ const Navbar: React.FC<{
 	}, [dispatch, LogoutData])
  
 	return (
-		<AppBar position={"static"}>
+		<AppBar position={"static"} style={{marginBottom: 32}}>
 			<Toolbar>
 				{Array.from(pages.entries()).map(([page, location], i) => {
 					if (currentPage.location === location && currentPage.page === page) {

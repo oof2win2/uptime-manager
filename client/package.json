@@ -21,6 +21,7 @@
     "@types/react-redux": "^7",
     "@types/react-router": "^5",
     "@types/react-router-dom": "^5",
+    "@types/yup": "^0",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "eslint": "^7.29.0",
@@ -36,6 +37,7 @@
     "@types/node": "^15.12.5",
     "@use-it/interval": "^1.0.0",
     "add": "^2.0.6",
+    "formik": "^2.2.9",
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
     "react": "^17.0.2",
@@ -48,7 +50,8 @@
     "redux-thunk": "^2.3.0",
     "urql": "^2.0.4",
     "use-react-router": "^1.0.7",
-    "yarn": "^1.22.10"
+    "yarn": "^1.22.10",
+    "yup": "^0.32.9"
   },
   "browserslist": {
     "production": [

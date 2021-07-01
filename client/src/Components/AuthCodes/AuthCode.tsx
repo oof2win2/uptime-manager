@@ -1,26 +1,25 @@
-import { Grid, Paper, Button, IconButton } from "@material-ui/core"
+import { Grid, Paper, IconButton } from "@material-ui/core"
 import DeleteIcon from "@material-ui/icons/DeleteRounded"
-import { AuthCodeClass, useRemoveAuthCodeMutation } from "src/generated/graphql"
+import { AuthCodeClass } from "src/generated/graphql"
+import { useStyles } from "../MaterialUIElements/Themes"
 
 interface AuthCodeProps {
 	code: AuthCodeClass,
-	updateGrid: () => void
+	removeAuthCode: (code: string) => void
 }
 
-const AuthCode: React.FC<AuthCodeProps> = ({code, updateGrid}) => {
-	const [, removeAuthCode] = useRemoveAuthCodeMutation()
-
+const AuthCode: React.FC<AuthCodeProps> = ({code, removeAuthCode}) => {
+	const styles = useStyles()
 	const removeSelf = () => {
-		removeAuthCode({code: code.code})
-		updateGrid()
+		removeAuthCode(code.code)
 	}
 
 	return (
-		<Grid item xs>
-		<Paper style={{maxWidth: 8*64}}>
-			<p>Code: {code.code}</p>
-			<p>Created at: {new Date(code.createdAt).toLocaleString()}</p>
-			<IconButton onClick={removeSelf}>
+		<Grid item xs="auto">
+		<Paper className={styles.innerPaper} style={{maxWidth: 8*32, minWidth: 8*32}}>
+			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8, paddingTop:16}}>Code: {code.code}</p>
+			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Created at: {new Date(code.createdAt).toLocaleString()}</p>
+			<IconButton onClick={removeSelf} style={{alignSelf: "center"}}>
 				<DeleteIcon />
 			</IconButton>
 		</Paper>

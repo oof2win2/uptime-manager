@@ -5,7 +5,8 @@ import ReduxStore from './redux/store'
 import { Provider as ReduxProvider } from 'react-redux'
 
 import App from "./app"
-// TODO: create global styles
+import { ThemeProvider, CssBaseline } from "@material-ui/core"
+import { themeDark } from "./Components/MaterialUIElements/Themes"
 
 const client = createClient({
 	url: "http://localhost:5555/graphql",
@@ -16,13 +17,22 @@ const client = createClient({
 	},
 })
 
+const Index = () => {
+	return (
+		<React.StrictMode>
+			<ReduxProvider store={ReduxStore}>
+			<ThemeProvider theme={themeDark}>
+				<UrqlProvider value={client}>
+					<CssBaseline />
+					<App />
+				</UrqlProvider>
+			</ThemeProvider>
+			</ReduxProvider>
+		</React.StrictMode>
+	)
+}
+
 ReactDOM.render(
-	<React.StrictMode>
-		<ReduxProvider store={ReduxStore}>
-		<UrqlProvider value={client}>
-			<App />
-		</UrqlProvider>
-		</ReduxProvider>
-	</React.StrictMode>,
+	<Index />,
 	document.getElementById("root")
 )

@@ -271,6 +271,35 @@ export type LogoutMutation = (
   )> }
 );
 
+export type CreateServiceMutationVariables = Exact<{
+  url: Scalars['String'];
+  name: Scalars['String'];
+  socketType: Scalars['String'];
+  port: Scalars['Float'];
+}>;
+
+
+export type CreateServiceMutation = (
+  { __typename?: 'Mutation' }
+  & { CreateService?: Maybe<(
+    { __typename?: 'ServiceClass' }
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
+export type DeleteServiceMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteServiceMutation = (
+  { __typename?: 'Mutation' }
+  & { DeleteService?: Maybe<(
+    { __typename?: 'ServiceClass' }
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
 export type SignupOrLoginMutationVariables = Exact<{
   AccessToken: Scalars['String'];
   State: Scalars['String'];
@@ -464,6 +493,40 @@ export const LogoutDocument = gql`
 
 export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
+};
+export const CreateServiceDocument = gql`
+    mutation CreateService($url: String!, $name: String!, $socketType: String!, $port: Float!) {
+  CreateService(url: $url, name: $name, socketType: $socketType, port: $port) {
+    id
+    name
+    url
+    socketType
+    port
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useCreateServiceMutation() {
+  return Urql.useMutation<CreateServiceMutation, CreateServiceMutationVariables>(CreateServiceDocument);
+};
+export const DeleteServiceDocument = gql`
+    mutation DeleteService($id: String!) {
+  DeleteService(id: $id) {
+    id
+    name
+    url
+    socketType
+    port
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useDeleteServiceMutation() {
+  return Urql.useMutation<DeleteServiceMutation, DeleteServiceMutationVariables>(DeleteServiceDocument);
 };
 export const SignupOrLoginDocument = gql`
     mutation SignupOrLogin($AccessToken: String!, $State: String!, $AppToken: String) {

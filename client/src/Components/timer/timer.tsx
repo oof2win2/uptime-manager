@@ -1,5 +1,7 @@
 import useInterval from "@use-it/interval"
+import { CSSProperties } from "react";
 import { useState } from "react"
+import { useStyles } from "../MaterialUIElements/Themes";
 
 function timeDiffCalc(dateFuture: number, dateNow: number): string {
 	let diffInSeconds = Math.abs(dateFuture - dateNow) / 1000;
@@ -24,15 +26,21 @@ function timeDiffCalc(dateFuture: number, dateNow: number): string {
 	if (seconds) difference += `${seconds} seconds`
 	return difference;
 }
+interface TimerProps {
+	from: Date
+	preString: string
+	style?: CSSProperties
+}
 
-const Timer: React.FC<{ from: Date, preString: string }> = ({ from, preString }: { from: Date, preString: string }) => {
+const Timer: React.FC<TimerProps> = ({ from, preString, style }) => {
 	const [dateString, setDateString] = useState<string>(`${preString} now`)
+	const styles = useStyles()
 	useInterval(() => {
 		const timeDiffString = timeDiffCalc(Date.now(), from.valueOf())
 		setDateString(`${preString} ${timeDiffString} ago`)
 	}, 1000)
 	return (
-		<p>{dateString}</p>
+		<p className={styles.p} style={style}>{dateString}</p>
 	)
 }
 export default Timer

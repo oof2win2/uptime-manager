@@ -1,0 +1,28 @@
+mutation CreateService(
+  $url: String!
+  $name: String!
+  $socketType: String!
+  $port: Float!
+) {
+  CreateService(url: $url, name: $name, socketType: $socketType, port: $port) {
+    id
+    name
+    url
+    socketType
+    port
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteService($id: String!) {
+	DeleteService(id: $id) {
+		id
+		name
+		url
+		socketType
+		port
+		createdAt
+		updatedAt
+	}
+}
