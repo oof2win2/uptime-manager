@@ -14,7 +14,8 @@ const ENV = cleanEnv(process.env, {
 	MONGOOSE_URI: url({ example: "mongodb+srv://dbUse:dbPassword@databaseLocation/defaultDatabaseName" }),
 	EXPRESS_PORT: port({ default: 5555 }),
 	WS_PORT: port({ default: 5556 }),
-	SESSION_SECRET: str()
+	SESSION_SECRET: str(),
+	FRONTEND_URL: url({desc: "The URL to your frontend"})
 })
 
 

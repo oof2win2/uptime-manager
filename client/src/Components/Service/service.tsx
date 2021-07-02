@@ -111,7 +111,7 @@ const Service: React.FC<ServiceProps> = ({ id }) => {
 
 	let latestDate: { time: number, log?: LogClass } = { time: 0 }
 	data.ServiceWithLogs.logs.forEach(log => {
-		if (log.createdAt > latestDate.time) latestDate = { time: log.createdAt, log: log }
+		if (new Date(log.createdAt).valueOf() > latestDate.time) latestDate = { time: log.createdAt, log: log }
 	})
 	if (!latestDate.log) latestDate.log = {
 		createdAt: Date.now(),
@@ -119,9 +119,12 @@ const Service: React.FC<ServiceProps> = ({ id }) => {
 		id: "0"
 	} as LogClass
 
+	console.log(latestDate)
+
 	return (
 		<Grid item xs="auto" justify="flex-end">
 			<Paper style={{marginLeft: -16, marginRight:-16, paddingLeft: 16, paddingRight: 16}} className={classes.innerPaper}>
+			<Grid>
 			<p className={classes.p}>{data.ServiceWithLogs.name}</p>
 			<svg width={19.8 * Array.from(days.entries()).length} height={32} style={{ display: "inline" }}>
 				{Array.from(days.entries()).sort((a,b)=>a[0]-b[0]).map((data, i) => {
@@ -130,6 +133,7 @@ const Service: React.FC<ServiceProps> = ({ id }) => {
 				})}
 			</svg>
 			<Current log={latestDate.log}  style={{ display: "inline" }} />
+			</Grid>
 			<ReactTooltip place="bottom" class="tooltip" html={true} />
 			</Paper>
 		</Grid>

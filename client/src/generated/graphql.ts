@@ -300,6 +300,23 @@ export type DeleteServiceMutation = (
   )> }
 );
 
+export type ModifyServiceMutationVariables = Exact<{
+  id: Scalars['String'];
+  name: Scalars['String'];
+  url: Scalars['String'];
+  port: Scalars['Float'];
+  socketType: Scalars['String'];
+}>;
+
+
+export type ModifyServiceMutation = (
+  { __typename?: 'Mutation' }
+  & { ModifyService?: Maybe<(
+    { __typename?: 'ServiceClass' }
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
 export type SignupOrLoginMutationVariables = Exact<{
   AccessToken: Scalars['String'];
   State: Scalars['String'];
@@ -527,6 +544,29 @@ export const DeleteServiceDocument = gql`
 
 export function useDeleteServiceMutation() {
   return Urql.useMutation<DeleteServiceMutation, DeleteServiceMutationVariables>(DeleteServiceDocument);
+};
+export const ModifyServiceDocument = gql`
+    mutation ModifyService($id: String!, $name: String!, $url: String!, $port: Float!, $socketType: String!) {
+  ModifyService(
+    id: $id
+    name: $name
+    url: $url
+    port: $port
+    socketType: $socketType
+  ) {
+    id
+    name
+    url
+    socketType
+    port
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useModifyServiceMutation() {
+  return Urql.useMutation<ModifyServiceMutation, ModifyServiceMutationVariables>(ModifyServiceDocument);
 };
 export const SignupOrLoginDocument = gql`
     mutation SignupOrLogin($AccessToken: String!, $State: String!, $AppToken: String) {

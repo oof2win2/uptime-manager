@@ -26,3 +26,15 @@ mutation DeleteService($id: String!) {
 		updatedAt
 	}
 }
+
+mutation ModifyService($id: String!, $name: String!, $url: String!, $port: Float!, $socketType: String!) {
+	ModifyService(id: $id, name: $name, url: $url, port: $port, socketType: $socketType) {
+		id
+		name
+		url
+		socketType
+		port
+		createdAt
+		updatedAt
+	}
+}

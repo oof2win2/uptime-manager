@@ -18,7 +18,7 @@ const Current: React.FC<CurrentProps> = ({log, style}: CurrentProps) => {
 	}
 	return (
 		<Fragment>
-		<p style={style} className={classes.p}>Current status: {online ? "Online" : "Unreachable"}</p>
+		<p style={style} className={classes.p}>Current status: {online ? "Online": "Unreachable"}</p>
 		<svg width={24} height={24} style={{marginTop: 14, marginLeft: 5, ...style}}>
 			<circle r={12} fill={calculateColor()} cx={12} cy={12}></circle>
 		</svg>
