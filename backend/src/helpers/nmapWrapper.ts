@@ -122,6 +122,7 @@ export default class nmapWrapper extends EventEmitter {
 						service: process
 					}
 				})
+				console.log(services)
 				resolve(services)
 			})
 		})

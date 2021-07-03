@@ -20,6 +20,7 @@
     "express": "^4.17.1",
     "express-http-context": "^1.2.4",
     "express-session": "^1.17.2",
+    "express-validator": "^6.12.0",
     "find-process": "^1.4.4",
     "graphql": "^15.5.1",
     "lsofi": "^1.0.0",
@@ -35,8 +36,10 @@
     "@types/express": "^4.17.12",
     "@types/express-session": "^1",
     "@types/mongoose": "5.10.5",
-    "@types/node": "^15.12.5",
+    "@types/node": "^15.14.0",
+    "@types/node-fetch": "^2",
     "eslint": "^7.29.0",
+    "node-fetch": "^2.6.1",
     "typescript": "^4.3.4"
   }
 }

@@ -28,9 +28,6 @@ import GatherLogs from "./Logger"
 import session from "express-session"
 import connectsqlite from "connect-sqlite3"
 import { Client as DiscordOAuth2Client } from "@2pg/oauth"
-import { createServer } from 'http'
-import { SubscriptionServer } from 'subscriptions-transport-ws';
-import { execute, subscribe } from 'graphql';
 
 import { ServiceResolver } from "./resolvers/Service"
 import { LogResolver } from "./resolvers/Logs"
@@ -39,6 +36,11 @@ import { AuthCodeResolver } from './resolvers/AuthCodes'
 
 import { COOKIE_NAME, __prod__ } from "./constants"
 import { ApolloContext } from "./types"
+
+import PostLogChecker from './helpers/PostLogChecker'
+import ServiceModel from './database/types/Service'
+
+import ServiceRouter from "./routes/services"
 
 
 const run = async () => {
@@ -105,31 +107,20 @@ const run = async () => {
 		}
 	})
 
+	app.use("/services", ServiceRouter)
+
 	app.listen(ENV.EXPRESS_PORT || 3000, () => {
 		console.log(`API connected at :${ENV.EXPRESS_PORT || 3000}`)
 	})
 
-	// const WebSocketServer = createServer((request, response) => {
-	// 	response.writeHead(404);
-	// 	response.end();
-	// });
-	// WebSocketServer.listen(ENV.WS_PORT, () => {
-	// 	console.log(`WebSocket server now running at :${ENV.WS_PORT}`)
-	// })
-	// const subscriptionServer = SubscriptionServer.create(
-	// 	{
-	// 		schema,
-	// 		execute,
-	// 		subscribe,
-	// 	},
-	// 	{
-	// 		server: WebSocketServer,
-	// 		path: '/graphql',
-	// 	},
-	// );
+	// This has been disabled because it uses nmap and for nmap to work with UDP you need sudo access
+	// Rather use the API requests
+	// setInterval(GatherLogs, 5*60*1000) // gather logs every 5 mins by default
 
-
-	// TODO: enable on prod, for now i have fake data
-	// setInterval(GatherLogs, 60*5*1000) // gather logs every 5 mins by default
+	// This is used to manage the API requests
+	setInterval(async () => {
+		const services = await ServiceModel.find({})
+		PostLogChecker.CreateUnreachable(services)
+	}, 5*60*1000)
 }
 run()

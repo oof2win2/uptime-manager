@@ -20,6 +20,8 @@ export class LogClass {
 	@prop()
 	public id!: string
 
+	public serviceId!: string
+
 	@Field()
 	@prop()
 	public reachable!: boolean

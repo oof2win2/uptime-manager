@@ -1,6 +1,7 @@
 import ServiceModel, { ServiceClass } from "./database/types/Service"
 import LogModel from "./database/types/Logs"
 import lsofi from "lsofi"
+import nmapWrapper from "./helpers/nmapWrapper"
 
 // TODO: finish up pinging, both with TCP and UDP
 
@@ -9,9 +10,12 @@ interface ServiceStatus {
 	service: ServiceClass
 }
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const nmap = new nmapWrapper({
+	maxScanTime: 12000
+})
 
 export default async function GatherLogs(): Promise<void> {
+	console.log("gathering logs")
 	const services = await ServiceModel.find({})
 
 	const servicePingsProm = services.map(async (service): Promise<ServiceStatus> => {
@@ -22,7 +26,23 @@ export default async function GatherLogs(): Promise<void> {
 					if (!processID) return { online: false, service: service }
 					return { online: true, service: service }
 				} else {
-					return { online: false, service: service }
+					let process: ServiceStatus
+					try {
+						const out = await nmap.runNmap({
+							ip: service.url,
+							args: ["-sU", "-p", `${service.port}`]
+						})
+						process = {
+							online: true,
+							service
+						}
+					} catch {
+						process = {
+							online: false,
+							service
+						}
+					}
+					return process
 				}
 			}
 			case "tcp": {
@@ -31,7 +51,25 @@ export default async function GatherLogs(): Promise<void> {
 					if (!processID) return { online: false, service: service }
 					return { online: true, service: service }
 				} else {
-					return { online: false, service: service }
+					//TODO: test this out and complete
+					let process: ServiceStatus
+					try {
+						const out = await nmap.runNmap({
+							ip: service.url,
+							args: ["-p", `${service.port}`]
+						})
+						console.log({service, out})
+						process = {
+							online: out[0].up,
+							service
+						}
+					} catch {
+						process = {
+							online: false,
+							service
+						}
+					}
+					return process
 				}
 			}
 		}
@@ -39,8 +77,11 @@ export default async function GatherLogs(): Promise<void> {
 	const servicePings = await Promise.all(servicePingsProm)
 	servicePings.forEach(async (servicePing) => {
 		const log = await LogModel.create({
-			reachable: false
+			reachable: false,
+			createdAt: Date.now(),
+			serviceId: servicePing.service.id
 		})
+		console.log({servicePing})
 		ServiceModel.updateOne({ id: servicePing.service.id }, { $push: { logs: log._id } }).exec()
 	})
 }
