@@ -1,5 +1,5 @@
-import { Resolver, Query, Arg, Mutation } from "type-graphql"
-import Service, { ServiceClass, SocketType } from "../database/types/Service"
+import { Resolver, Query, Arg } from "type-graphql"
+import Service, { ServiceClass } from "../database/types/Service"
 import { DocumentType } from "@typegoose/typegoose"
 
 

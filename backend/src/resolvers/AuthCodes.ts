@@ -1,9 +1,7 @@
-import { Resolver, Query, Arg, Mutation, Ctx, Field, ObjectType, UseMiddleware } from "type-graphql"
+import { Resolver, Query, Arg, Mutation, Field, ObjectType, UseMiddleware } from "type-graphql"
 import AuthCodeModel, { AuthCodeClass } from "../database/types/AuthCodes"
-import { ApolloContext, FieldError } from "../types"
+import { FieldError } from "../types"
 import { isAuth } from "../middleware/isAuth"
-import { UserClass } from "../database/types/User"
-import { DocumentType } from "@typegoose/typegoose"
 
 @ObjectType()
 class AuthCodeResponse {

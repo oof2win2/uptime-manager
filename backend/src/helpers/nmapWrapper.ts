@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { EventEmitter } from "events"
 import { spawn } from "child_process"
 
@@ -97,7 +98,7 @@ export default class nmapWrapper extends EventEmitter {
 				}).reduce((prev, curr) => prev || curr)
 				if (shouldNetNothing) return resolve([])
 
-				let outputLines = stdout
+				const outputLines = stdout
 					.map(line => {
 						if (line.search("Starting Nmap") !== -1) return ""
 						if (line.search("Nmap scan report for") !== -1) return ""

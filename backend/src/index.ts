@@ -1,5 +1,5 @@
 // validate env before anything else
-import { cleanEnv, str, num, url, port } from 'envalid'
+import { cleanEnv, str, url, port } from 'envalid'
 import dotenv from "dotenv"
 process.chdir(__dirname) // change dir to current file location instead of wherever this is launching from
 
@@ -24,7 +24,7 @@ import { ApolloServer } from "apollo-server-express"
 import express from "express"
 import { buildSchema } from "type-graphql"
 import mongoose from "mongoose"
-import GatherLogs from "./Logger"
+// import GatherLogs from "./Logger"
 import session from "express-session"
 import connectsqlite from "connect-sqlite3"
 import { Client as DiscordOAuth2Client } from "@2pg/oauth"
@@ -41,6 +41,7 @@ import PostLogChecker from './helpers/PostLogChecker'
 import ServiceModel from './database/types/Service'
 
 import ServiceRouter from "./routes/services"
+import AuthCodeModel from './database/types/AuthCodes'
 
 
 const run = async () => {
@@ -102,7 +103,7 @@ const run = async () => {
 	// cors didnt work with it, that was the most annoying thing EVER to fix
 	apolloServer.applyMiddleware({
 		app, cors: {
-			origin: "http://localhost:3000",
+			origin: ENV.FRONTEND_URL,
 			credentials: true
 		}
 	})
@@ -122,5 +123,14 @@ const run = async () => {
 		const services = await ServiceModel.find({})
 		PostLogChecker.CreateUnreachable(services)
 	}, 5*60*1000)
+
+
+	// this is for first setup.
+	const authcodes = await AuthCodeModel.find({})
+	if (!authcodes.length) AuthCodeModel.create({
+		code: "AUTHCODE",
+		createdAt: Date.now(),
+		updatedAt: Date.now(),
+	})
 }
 run()

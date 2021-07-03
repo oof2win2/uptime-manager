@@ -2,7 +2,7 @@ import { Grid, Paper, IconButton, Dialog, InputLabel, TextField, MenuItem, Butto
 import DeleteIcon from "@material-ui/icons/DeleteRounded"
 import EditIcon from '@material-ui/icons/EditRounded'
 import { useState } from "react"
-import { ModifyServiceMutation, MutationModifyServiceArgs, ServiceClass } from "../../generated/graphql"
+import { MutationModifyServiceArgs, ServiceClass } from "../../generated/graphql"
 import DialogBox from "../DialogBox/DialogBox"
 import { useStyles } from "../MaterialUIElements/Themes"
 import { useFormik } from 'formik';

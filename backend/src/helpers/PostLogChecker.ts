@@ -1,6 +1,6 @@
 import { DocumentType } from "@typegoose/typegoose"
 import LogModel from "../database/types/Logs"
-import ServiceModel, { ServiceClass } from "../database/types/Service"
+import { ServiceClass } from "../database/types/Service"
 
 class PostLogCheckerClass {
 	private checked: Map<string, Date>

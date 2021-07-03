@@ -1,7 +1,7 @@
 import { getModelForClass, modelOptions, pre, prop, Ref } from "@typegoose/typegoose"
 import { Field, ObjectType } from 'type-graphql'
 import { getUserID } from '../../functions'
-import LogModel, { LogClass } from "./Logs"
+import { LogClass } from "./Logs"
 
 export type SocketType = "udp" | "tcp"
 
