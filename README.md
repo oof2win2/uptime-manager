@@ -2,7 +2,7 @@
 An open-source uptime manager
 
 ![Service status display](https://i.imgur.com/AvHlcPz.png)
-![Editing a service](https://i.imgur.com/zCwSzxF.png)
+![Editing a service](https://i.imgur.com/s7MrKGn.png)
 
 ## Features
 - A 30-day past data display with % of uptime per day
