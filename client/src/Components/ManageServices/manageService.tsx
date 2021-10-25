@@ -45,7 +45,8 @@ const ManagerService: React.FC<ManagerServiceProp> = ({service, deleteService, m
 			serviceName: service.name,
 			socketType: service.socketType,
 			port: service.port.toString(),
-			url: service.url
+			url: service.url,
+			postUpdating: service.postUpdating ? "true" : "false"
 		},
 		validationSchema: formValidationSchema,
 		onSubmit: ((values) => modifyService({
@@ -53,7 +54,8 @@ const ManagerService: React.FC<ManagerServiceProp> = ({service, deleteService, m
 			port: parseInt(values.port),
 			socketType: values.socketType,
 			url: values.url,
-			id: service.id
+			id: service.id,
+			postUpdating: values.postUpdating == "true" ? true : false
 		}))
 	})
 	const editDialog = 
@@ -103,6 +105,20 @@ const ManagerService: React.FC<ManagerServiceProp> = ({service, deleteService, m
 				<MenuItem value="udp">UDP</MenuItem>
 				<MenuItem value="tcp">TCP</MenuItem>
 			</Select>
+			<InputLabel>POST updating</InputLabel>
+			{console.log(formik.values.postUpdating)}
+			<Select 
+				fullWidth
+				id="postUpdating"
+				name="postUpdating"
+				label="POST updating"
+				value={formik.values.postUpdating}
+				onChange={formik.handleChange}
+				error={formik.touched.postUpdating && Boolean(formik.touched.postUpdating)}
+			>
+				<MenuItem value="true">Yes</MenuItem>
+				<MenuItem value="false">No</MenuItem>
+			</Select>
 			<Button fullWidth type="submit">
 				Update service
 			</Button>
@@ -118,6 +134,7 @@ const ManagerService: React.FC<ManagerServiceProp> = ({service, deleteService, m
 			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Created at: {new Date(service.createdAt).toLocaleString()}</p>
 			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Socket type: {service.socketType === "udp" ? "UDP" : "TCP"}</p>
 			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>Port: {service.port}</p>
+			<p className={styles.p} style={{alignSelf: "center", marginLeft: 8}}>POST updating: {service.postUpdating ? "Yes" : "No"}</p>
 			<IconButton onClick={promptRemove} style={{alignSelf: "center"}}>
 				<DeleteIcon />
 			</IconButton>

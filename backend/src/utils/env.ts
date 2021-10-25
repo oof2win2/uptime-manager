@@ -1,8 +1,8 @@
-import { cleanEnv, str, url, port } from 'envalid'
+import { cleanEnv, str, url, port, num } from 'envalid'
 import dotenv from "dotenv"
 
 dotenv.config({
-	path: "../../.env"
+	path: "../.env"
 })
 
 const ENV = cleanEnv(process.env, {
@@ -14,6 +14,7 @@ const ENV = cleanEnv(process.env, {
 	WS_PORT: port({ default: 5556 }),
 	SESSION_SECRET: str(),
 	FRONTEND_URL: url({desc: "The URL to your frontend"}),
-	SUDO_PASSWORD: str({desc: "Sudo user password for UDP nmap (nmap -sU)"})
+	SUDO_PASSWORD: str({desc: "Sudo user password for UDP nmap (nmap -sU)"}),
+	NMAP_THREAD_COUNT: num({desc: "The amount of simultaneous nmap instances that can run", default: 8})
 })
 export default ENV

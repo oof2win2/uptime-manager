@@ -7,5 +7,6 @@ query Service($id: String!) {
 		updatedAt
 		socketType
 		port
+		postUpdating
 	}
 }

@@ -71,6 +71,7 @@ export type Mutation = {
 
 
 export type MutationCreateServiceArgs = {
+  postUpdating: Scalars['Boolean'];
   port: Scalars['Float'];
   socketType: Scalars['String'];
   url: Scalars['String'];
@@ -84,6 +85,7 @@ export type MutationDeleteServiceArgs = {
 
 
 export type MutationModifyServiceArgs = {
+  postUpdating: Scalars['Boolean'];
   port: Scalars['Float'];
   socketType: Scalars['String'];
   url: Scalars['String'];
@@ -141,6 +143,7 @@ export type ServiceClass = {
   port: Scalars['Float'];
   url: Scalars['String'];
   socketType: Scalars['String'];
+  postUpdating: Scalars['Boolean'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   logs: Array<LogClass>;
@@ -276,6 +279,7 @@ export type CreateServiceMutationVariables = Exact<{
   name: Scalars['String'];
   socketType: Scalars['String'];
   port: Scalars['Float'];
+  postUpdating: Scalars['Boolean'];
 }>;
 
 
@@ -283,7 +287,7 @@ export type CreateServiceMutation = (
   { __typename?: 'Mutation' }
   & { CreateService?: Maybe<(
     { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt' | 'postUpdating'>
   )> }
 );
 
@@ -306,6 +310,7 @@ export type ModifyServiceMutationVariables = Exact<{
   url: Scalars['String'];
   port: Scalars['Float'];
   socketType: Scalars['String'];
+  postUpdating: Scalars['Boolean'];
 }>;
 
 
@@ -313,7 +318,7 @@ export type ModifyServiceMutation = (
   { __typename?: 'Mutation' }
   & { ModifyService?: Maybe<(
     { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt' | 'postUpdating'>
   )> }
 );
 
@@ -392,7 +397,7 @@ export type ServiceQuery = (
   { __typename?: 'Query' }
   & { Service?: Maybe<(
     { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port'>
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port' | 'postUpdating'>
   )> }
 );
 
@@ -403,7 +408,7 @@ export type ServicesQuery = (
   { __typename?: 'Query' }
   & { Services: Array<(
     { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port'>
+    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port' | 'postUpdating'>
   )> }
 );
 
@@ -512,8 +517,14 @@ export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
 export const CreateServiceDocument = gql`
-    mutation CreateService($url: String!, $name: String!, $socketType: String!, $port: Float!) {
-  CreateService(url: $url, name: $name, socketType: $socketType, port: $port) {
+    mutation CreateService($url: String!, $name: String!, $socketType: String!, $port: Float!, $postUpdating: Boolean!) {
+  CreateService(
+    url: $url
+    name: $name
+    socketType: $socketType
+    port: $port
+    postUpdating: $postUpdating
+  ) {
     id
     name
     url
@@ -521,6 +532,7 @@ export const CreateServiceDocument = gql`
     port
     createdAt
     updatedAt
+    postUpdating
   }
 }
     `;
@@ -546,13 +558,14 @@ export function useDeleteServiceMutation() {
   return Urql.useMutation<DeleteServiceMutation, DeleteServiceMutationVariables>(DeleteServiceDocument);
 };
 export const ModifyServiceDocument = gql`
-    mutation ModifyService($id: String!, $name: String!, $url: String!, $port: Float!, $socketType: String!) {
+    mutation ModifyService($id: String!, $name: String!, $url: String!, $port: Float!, $socketType: String!, $postUpdating: Boolean!) {
   ModifyService(
     id: $id
     name: $name
     url: $url
     port: $port
     socketType: $socketType
+    postUpdating: $postUpdating
   ) {
     id
     name
@@ -561,6 +574,7 @@ export const ModifyServiceDocument = gql`
     port
     createdAt
     updatedAt
+    postUpdating
   }
 }
     `;
@@ -649,6 +663,7 @@ export const ServiceDocument = gql`
     updatedAt
     socketType
     port
+    postUpdating
   }
 }
     `;
@@ -666,6 +681,7 @@ export const ServicesDocument = gql`
     updatedAt
     socketType
     port
+    postUpdating
   }
 }
     `;

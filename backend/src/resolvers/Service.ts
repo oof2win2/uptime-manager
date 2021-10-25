@@ -1,5 +1,5 @@
 import { Resolver, Query, Arg, Mutation } from "type-graphql"
-import Service, { ServiceClass, SocketType } from "../database/types/Service"
+import Service, { ServiceClass } from "../database/types/Service"
 import { DocumentType } from "@typegoose/typegoose"
 import LogModel from "../database/types/Logs"
 
@@ -20,8 +20,9 @@ export class ServiceResolver {
 	async CreateService(
 		@Arg("name", () => String) name: string,
 		@Arg("url", () => String) url: string,
-		@Arg("socketType", () => String) type: SocketType,
+		@Arg("socketType", () => String) type: "tcp" | "udp",
 		@Arg("port", () => Number) port: number,
+		@Arg("postUpdating", () => Boolean) postUpdating: boolean,
 	): Promise<DocumentType<ServiceClass> | null> {
 		const service = await Service.create({
 			name: name,
@@ -31,6 +32,7 @@ export class ServiceResolver {
 			socketType: type,
 			port: port,
 			logs: [],
+			postUpdating: postUpdating
 		})
 		return service
 	}
@@ -47,11 +49,12 @@ export class ServiceResolver {
 		@Arg("id", () => String) id: string,
 		@Arg("name", () => String) name: string,
 		@Arg("url", () => String) url: string,
-		@Arg("socketType", () => String) type: SocketType,
+		@Arg("socketType", () => String) type: "tcp" | "udp",
 		@Arg("port", () => Number) port: number,
+		@Arg("postUpdating", () => Boolean) postUpdating: boolean
 	): Promise<DocumentType<ServiceClass> | null> {
 		const service = await Service.findOneAndUpdate({ id: id }, {
-			$set: { name: name, url: url, socketType: type, port: port }
+			$set: { name: name, url: url, socketType: type, port: port, postUpdating: postUpdating }
 		}, { new: true }).exec()
 		return service
 	}

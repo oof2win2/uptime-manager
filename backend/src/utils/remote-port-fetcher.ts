@@ -1,22 +1,26 @@
 import { EventEmitter } from "stream"
 import ChildProcess from "child_process"
 import ENV from "./env"
+import ServiceModel from "../database/types/Service"
 
 export interface PortScanRequest {
+	serviceId: string
 	host: string
 	port: number
 	type: "tcp" | "udp"
 }
 
-interface PrivatePortScanRequest extends PortScanRequest {
+interface RegisteredPortScanRequest extends PortScanRequest {
 	scanId: number
 }
 
 export type PortScanResult = {
+	serviceId: string
 	scanId: number
 	succeeded: true
 	result: "open" | "closed"
 } | {
+	serviceId: string
 	scanId: number
 	succeeded: false
 }
@@ -44,15 +48,38 @@ declare interface RemotePortFetcherClass {
 	): boolean
 }
 
+interface RemotePortFetcherClassOpts {
+	/**
+	 * limit of concurrent requests
+	 * @default 4
+	 */
+	limit?: number
+	/**
+	 * the password to the sudo account, to be used for UDP tests
+	 */
+	sudoPassword: string
+	/**
+	 * maximum amount of time to spend per scan, in ms
+	 * @default 30000
+	 */
+	maxTime?: number
+}
+
 class RemotePortFetcherClass extends EventEmitter {
-	private queue: PrivatePortScanRequest[] = []
+	private queue: RegisteredPortScanRequest[] = []
 	private currentlyRunning = 0
 	private threadLimit: number
 	public totalRequests = 0
 	private scanId = 0
+	private readonly sudoPassword: string
+	private readonly maxTime: number
 
 	private scanningInterval: NodeJS.Timeout
-	constructor(limit = 4) {
+	constructor({
+		limit = 4,
+		sudoPassword,
+		maxTime = 30*1000,
+	}: RemotePortFetcherClassOpts) {
 		super()
 		this.currentlyRunning += 1
 		this.threadLimit = limit
@@ -60,14 +87,18 @@ class RemotePortFetcherClass extends EventEmitter {
 		this.scanningInterval = setInterval(() => {
 			if (this.currentlyRunning < this.threadLimit) this.scan()
 		}, 1000)
+		this.sudoPassword = sudoPassword
+		this.maxTime = maxTime
 	}
-	addToQueue(request: PortScanRequest) {
-		this.queue.push({
+	addToQueue(request: PortScanRequest): RegisteredPortScanRequest {
+		const regRequest = {
 			...request,
 			scanId: this.scanId
-		})
+		}
+		this.queue.push(regRequest)
 		this.totalRequests += 1
 		this.scanId += 1
+		return regRequest
 	}
 
 	private async scan() {
@@ -80,26 +111,31 @@ class RemotePortFetcherClass extends EventEmitter {
 		const child = ChildProcess.spawn(args.shift() as string, args)
 		
 		const scanData: string[] = []
-		console.log(child.spawnargs)
 		const handleMessage = (chunk: { toString: () => string }) => {
 			const data = chunk.toString()
 			if (data.includes("Password:")) {
-				child.stdin.write(ENV.SUDO_PASSWORD)
+				child.stdin.write(this.sudoPassword)
 				child.stdin.end()
 			} else {
 				scanData.push(data)
 			}
 		}
 
+		const timeout = setTimeout(() => {
+			child.kill("SIGINT")
+		}, this.maxTime)
+
 		child.stdout?.on("data", handleMessage)
 		child.stderr?.on("data", handleMessage)
 		child.on("exit", () => {
-			console.log(scanData)
+			clearTimeout(timeout)
+
 			const dataLine = scanData.find((line) => {
 				if (line.includes("Host is") || line.includes("Host seems")) return true
 			}).split("\n")
 			if (dataLine[0].includes("Host seems")) {
 				return this.emit("scanCompleted", {
+					serviceId: scan.serviceId,
 					scanId: scan.scanId,
 					succeeded: false
 				})
@@ -110,16 +146,19 @@ class RemotePortFetcherClass extends EventEmitter {
 				if (line.split(" ").filter(r=>r).includes("PORT")) portLine = dataLine[i+1].split(" ")
 			})
 			if (!portLine) return this.emit("scanCompleted", {
+				serviceId: scan.serviceId,
 				scanId: scan.scanId,
 				succeeded: false
 			})
 			
 			if (["closed", "filtered", "closed|filtered"].includes(portLine[1])) return this.emit("scanCompleted", {
+				serviceId: scan.serviceId,
 				scanId: scan.scanId,
 				succeeded: true,
 				result: "closed"
 			})
 			return this.emit("scanCompleted", {
+				serviceId: scan.serviceId,
 				scanId: scan.scanId,
 				succeeded: true,
 				result: "open"
@@ -127,20 +166,29 @@ class RemotePortFetcherClass extends EventEmitter {
 		})
 	}
 
+	/**
+	 * Add all service fetches to the queue
+	 */
+	async scanAllServices(): Promise<RegisteredPortScanRequest[]> {
+		const services = await ServiceModel.find({})
 
+		const requests = services.map((service) => {
+			if (service.postUpdating) return 
+			
+			return this.addToQueue({
+				serviceId: service.id,
+				host: service.url,
+				port: service.port,
+				type: service.socketType
+			})
+		}).filter(s=>s)
 
-	destroy() {
+		return requests
+	}
+
+	destroy(): void {
 		clearInterval(this.scanningInterval)
 	}
 }
-const run = new RemotePortFetcherClass()
 
-run.addToQueue({
-	host: "144.76.101.206",
-	port: 39001,
-	type: "tcp",
-})
-run.on("scanCompleted", (result) => {
-	console.log(result, "scan completed")
-	run.destroy()
-})
+export default RemotePortFetcherClass
