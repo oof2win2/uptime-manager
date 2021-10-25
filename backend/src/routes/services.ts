@@ -2,7 +2,7 @@ import { Router } from "express"
 import { param, validationResult } from 'express-validator';
 import LogModel from "../database/types/Logs";
 import ServiceModel from "../database/types/Service";
-import PostLogChecker from "../helpers/PostLogChecker";
+import PostLogChecker from "../utils/PostLogChecker";
 
 const router = Router()
 

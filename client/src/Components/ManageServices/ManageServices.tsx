@@ -47,7 +47,8 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 		serviceName: Yup.string().required("Required"),
 		socketType: Yup.string().oneOf(["udp", "tcp"], "Must be one of udp or tcp").required("Required"),
 		port: Yup.number().min(0, "Port cannot be negative").max(65535, "Too high number to be a port").required("Required"),
-		url: Yup.string().required("URL is required")
+		url: Yup.string().required("URL is required"),
+		postUpdating: Yup.boolean().required("postUpdating is required")
 	})
 
 	const formik = useFormik({
@@ -55,7 +56,8 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 			serviceName: "",
 			socketType: "",
 			port: "0",
-			url: ""
+			url: "",
+			postUpdating: "false"
 		},
 		validationSchema: formValidationSchema,
 		onSubmit: ((values) => {
@@ -63,7 +65,8 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 				name: values.serviceName,
 				url: values.url,
 				port: parseInt(values.port),
-				socketType: values.socketType
+				socketType: values.socketType,
+				postUpdating: values.postUpdating == "true" ? true : false
 			})
 		})
 	})
@@ -115,6 +118,19 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 					<MenuItem value="udp">UDP</MenuItem>
 					<MenuItem value="tcp">TCP</MenuItem>
 				</Select>
+				<InputLabel>POST updating</InputLabel>
+				<Select 
+					fullWidth
+					id="postUpdating"
+					name="postUpdating"
+					label="POST updating"
+					value={formik.values.postUpdating}
+					onChange={formik.handleChange}
+					error={formik.touched.postUpdating && Boolean(formik.touched.postUpdating)}
+				>
+					<MenuItem value="true">Yes</MenuItem>
+					<MenuItem value="false">No</MenuItem>
+				</Select>
 				<Button fullWidth type="submit">
 					Create service
 				</Button>
@@ -136,7 +152,14 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 	const services = Services.Services as ServiceClass[]
 	if (!services.length) return (
 		<div>
-			<p className={styles.p}>An error has occured</p>
+			<p className={styles.p}>No services to display</p>
+			<Button onClick={() => {
+				setCreatingService(true)
+			}}
+			>
+				<p className={styles.p}>Create a service</p>
+			</Button>
+			{createServiceForm}
 		</div>
 	)
 	return (

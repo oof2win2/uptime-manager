@@ -3,8 +3,6 @@ import { Field, ObjectType } from 'type-graphql'
 import { getUserID } from '../../functions'
 import { LogClass } from "./Logs"
 
-export type SocketType = "udp" | "tcp"
-
 @pre<ServiceClass>("save", function (next) {
 	this.id = getUserID(this._id.toString())
 	this.updatedAt = new Date()
@@ -36,8 +34,11 @@ export class ServiceClass {
 
 	@Field()
 	@prop({ enum: ["udp", "tcp"] })
-	public socketType!: SocketType
+	public socketType!: "udp" | "tcp"
 
+	@Field()
+	@prop({ default: true })
+	public postUpdating!: boolean
 
 	// set by mongoose
 	@Field()

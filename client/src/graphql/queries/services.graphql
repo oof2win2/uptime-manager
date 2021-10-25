@@ -7,5 +7,6 @@ query Services {
 		updatedAt
 		socketType
 		port
+		postUpdating
 	}
 }

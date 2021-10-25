@@ -1,23 +1,5 @@
 // validate env before anything else
-import { cleanEnv, str, url, port } from 'envalid'
-import dotenv from "dotenv"
 process.chdir(__dirname) // change dir to current file location instead of wherever this is launching from
-
-dotenv.config({
-	path: "../.env"
-})
-
-const ENV = cleanEnv(process.env, {
-	DISCORD_CLIENTID: str({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
-	DISCORD_CLIENTSECRET: str({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
-	DISCORD_REDIRECTURI: url({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
-	MONGOOSE_URI: url({ example: "mongodb+srv://dbUse:dbPassword@databaseLocation/defaultDatabaseName" }),
-	EXPRESS_PORT: port({ default: 5555 }),
-	WS_PORT: port({ default: 5556 }),
-	SESSION_SECRET: str(),
-	FRONTEND_URL: url({desc: "The URL to your frontend"})
-})
-
 
 import "reflect-metadata"
 import { ApolloServer } from "apollo-server-express"
@@ -37,12 +19,19 @@ import { AuthCodeResolver } from './resolvers/AuthCodes'
 import { COOKIE_NAME, __prod__ } from "./constants"
 import { ApolloContext } from "./types"
 
-import PostLogChecker from './helpers/PostLogChecker'
+import PostLogChecker from './utils/PostLogChecker'
 import ServiceModel from './database/types/Service'
 
 import ServiceRouter from "./routes/services"
 import AuthCodeModel from './database/types/AuthCodes'
+import ENV from "./utils/env"
+import RemotePortFetcherClass, { PortScanResult } from "./utils/remote-port-fetcher"
+import LogModel from "./database/types/Logs"
 
+const RemotePortFetcher = new RemotePortFetcherClass({
+	limit: ENV.NMAP_THREAD_COUNT,
+	sudoPassword: ENV.SUDO_PASSWORD,
+})
 
 const run = async () => {
 	mongoose.connect(ENV.MONGOOSE_URI as string, {
@@ -103,7 +92,9 @@ const run = async () => {
 	// cors didnt work with it, that was the most annoying thing EVER to fix
 	apolloServer.applyMiddleware({
 		app, cors: {
-			origin: ENV.FRONTEND_URL,
+			// origin: ENV.FRONTEND_URL
+			// origin: "http://localhost:5555",
+			origin: true,
 			credentials: true
 		}
 	})
@@ -114,9 +105,26 @@ const run = async () => {
 		console.log(`API connected at :${ENV.EXPRESS_PORT || 3000}`)
 	})
 
-	// This has been disabled because it uses nmap and for nmap to work with UDP you need sudo access
-	// Rather use the API requests
-	// setInterval(GatherLogs, 5*60*1000) // gather logs every 5 mins by default
+	// fetch remote ports
+	setInterval(async () => {
+		let requests = await RemotePortFetcher.scanAllServices()
+		const listener = (result: PortScanResult) => {
+			requests = requests.filter((request) => request.scanId !== result.scanId)
+			LogModel.create({
+				serviceId: result.serviceId,
+				reachable: result.succeeded && result.result == "open",
+				createdAt: new Date()
+			}).then(async (doc) => {
+				const service = await ServiceModel.findOne({id: result.serviceId})
+				service.logs.push(doc._id)
+				service.save()
+			})
+			if (requests.length == 0) {
+				RemotePortFetcher.off("scanCompleted", listener)
+			}
+		}
+		RemotePortFetcher.on("scanCompleted", listener)
+	}, 15*1000) // gather logs every 5 mins by default
 
 	// This is used to manage the API requests
 	setInterval(async () => {

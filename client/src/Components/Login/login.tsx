@@ -47,7 +47,6 @@ const Login: React.FC = () => {
 	}
 
 	if (user) {
-		console.log("should show snackbar success")
 		return (
 			<div>
 			<Snackbar

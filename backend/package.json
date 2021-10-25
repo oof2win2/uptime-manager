@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-	"lint": "eslint src/ --fix",
+    "lint": "eslint src/ --fix",
     "download": "yarn install && tsc",
     "start": "node dist/index.js"
   },
@@ -16,7 +16,7 @@
     "@typegoose/typegoose": "^7.6.1",
     "apollo-server-express": "^2.25.2",
     "class-validator": "^0.13.1",
-    "connect-sqlite3": "^0.9.11",
+    "connect-sqlite3": "^0.9.12",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "envalid": "^7.1.0",

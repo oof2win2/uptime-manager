@@ -111,15 +111,13 @@ const Service: React.FC<ServiceProps> = ({ id }) => {
 
 	let latestDate: { time: number, log?: LogClass } = { time: 0 }
 	data.ServiceWithLogs.logs.forEach(log => {
-		if (new Date(log.createdAt).valueOf() > latestDate.time) latestDate = { time: log.createdAt, log: log }
+		if (new Date(log.createdAt).valueOf() > latestDate.time) latestDate = { time: new Date(log.createdAt).valueOf(), log: log }
 	})
 	if (!latestDate.log) latestDate.log = {
 		createdAt: Date.now(),
 		reachable: false,
 		id: "0"
 	} as LogClass
-
-	console.log(latestDate)
 
 	return (
 		<Grid item xs="auto" justify="flex-end">

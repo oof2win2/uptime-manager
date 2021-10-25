@@ -15,7 +15,6 @@ const Day: React.FC<{logs: LogClass[], pos: number}> = ({logs, pos}: {logs: LogC
 		const numberReachable = logs.filter(log => log.reachable).length
 		const minColor = "#fc1505"
 		const maxColor = "#05fc19"
-		console.log({numberReachable}, timeString)
 		const grad = getColorFromDataGradient(minColor, 0, maxColor, logs.length, logs.length, numberReachable ? numberReachable - 1 : numberReachable)
 		return grad as string
 	}
