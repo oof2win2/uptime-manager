@@ -74,12 +74,13 @@ class RemotePortFetcherClass extends EventEmitter {
 		// TODO: finish sending password to process
 		const scan = this.queue.shift()
 		if (!scan) return
-		const cmd = `${scan.type === "udp" && "sudo --stdin"} nmap ${scan.type === "udp" && "-sU"} ${scan.host} -p ${scan.port}`
+		// using the -Pn flag so TCP ports are scanned correctly
+		const cmd = `${scan.type === "udp" ? "sudo --stdin " : ""}nmap ${scan.type === "udp" ? "-sU " : ""}${scan.host} -p ${scan.port} -Pn`.trim()
 		const args: string[] = cmd.split(" ")
 		const child = ChildProcess.spawn(args.shift() as string, args)
 		
 		const scanData: string[] = []
-	
+		console.log(child.spawnargs)
 		const handleMessage = (chunk: { toString: () => string }) => {
 			const data = chunk.toString()
 			if (data.includes("Password:")) {
@@ -93,18 +94,36 @@ class RemotePortFetcherClass extends EventEmitter {
 		child.stdout?.on("data", handleMessage)
 		child.stderr?.on("data", handleMessage)
 		child.on("exit", () => {
-			const dataLine = scanData.map((line) => {
-				if (line.includes("Host is") || line.includes("Host seems")) return line
-			}).filter(i=>i)[0]?.split("\n") as string[]
+			console.log(scanData)
+			const dataLine = scanData.find((line) => {
+				if (line.includes("Host is") || line.includes("Host seems")) return true
+			}).split("\n")
 			if (dataLine[0].includes("Host seems")) {
 				return this.emit("scanCompleted", {
 					scanId: scan.scanId,
 					succeeded: false
 				})
 			}
-			console.log(dataLine)
 
-			this.destroy()
+			let portLine: string[]
+			dataLine.forEach((line, i) => {
+				if (line.split(" ").filter(r=>r).includes("PORT")) portLine = dataLine[i+1].split(" ")
+			})
+			if (!portLine) return this.emit("scanCompleted", {
+				scanId: scan.scanId,
+				succeeded: false
+			})
+			
+			if (["closed", "filtered", "closed|filtered"].includes(portLine[1])) return this.emit("scanCompleted", {
+				scanId: scan.scanId,
+				succeeded: true,
+				result: "closed"
+			})
+			return this.emit("scanCompleted", {
+				scanId: scan.scanId,
+				succeeded: true,
+				result: "open"
+			})
 		})
 	}
 
@@ -118,10 +137,10 @@ const run = new RemotePortFetcherClass()
 
 run.addToQueue({
 	host: "144.76.101.206",
-	port: 39000,
-	type: "udp",
+	port: 39001,
+	type: "tcp",
 })
 run.on("scanCompleted", (result) => {
-	console.log(result)
+	console.log(result, "scan completed")
 	run.destroy()
 })
