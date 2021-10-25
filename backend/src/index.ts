@@ -1,23 +1,5 @@
 // validate env before anything else
-import { cleanEnv, str, url, port } from 'envalid'
-import dotenv from "dotenv"
 process.chdir(__dirname) // change dir to current file location instead of wherever this is launching from
-
-dotenv.config({
-	path: "../.env"
-})
-
-const ENV = cleanEnv(process.env, {
-	DISCORD_CLIENTID: str({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
-	DISCORD_CLIENTSECRET: str({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
-	DISCORD_REDIRECTURI: url({ docs: "https://discord.com/developers/docs/topics/oauth2" }),
-	MONGOOSE_URI: url({ example: "mongodb+srv://dbUse:dbPassword@databaseLocation/defaultDatabaseName" }),
-	EXPRESS_PORT: port({ default: 5555 }),
-	WS_PORT: port({ default: 5556 }),
-	SESSION_SECRET: str(),
-	FRONTEND_URL: url({desc: "The URL to your frontend"})
-})
-
 
 import "reflect-metadata"
 import { ApolloServer } from "apollo-server-express"
@@ -37,11 +19,12 @@ import { AuthCodeResolver } from './resolvers/AuthCodes'
 import { COOKIE_NAME, __prod__ } from "./constants"
 import { ApolloContext } from "./types"
 
-import PostLogChecker from './helpers/PostLogChecker'
+import PostLogChecker from './utils/PostLogChecker'
 import ServiceModel from './database/types/Service'
 
 import ServiceRouter from "./routes/services"
 import AuthCodeModel from './database/types/AuthCodes'
+import ENV from "./utils/env"
 
 
 const run = async () => {

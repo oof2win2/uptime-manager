@@ -81,6 +81,7 @@ export class UserResolver {
 	): Promise<UserResponse> {
 		let DiscordUser: User | null
 		let access: string
+
 		try {
 			access = await ctx.oauth.getAccess(code)
 			DiscordUser = await ctx.oauth.getUser(access)
