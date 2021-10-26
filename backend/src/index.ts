@@ -128,6 +128,11 @@ const run = async () => {
 				data: {
 					serviceId: result.serviceId,
 					reachable: result.succeeded && result.result == "open",
+					// get the ping if it is open. can be null though
+					ping:
+						result.succeeded &&
+						result.result == "open" &&
+						result.ping,
 				},
 			})
 			if (requests.length == 0) {
@@ -135,13 +140,13 @@ const run = async () => {
 			}
 		}
 		RemotePortFetcher.on("scanCompleted", listener)
-	}, 15 * 1000) // gather logs every 5 mins by default
+	}, 10 * 1000) // gather logs every 5 mins by default
 
 	// This is used to manage the API requests
 	setInterval(async () => {
 		const services = await prisma.service.findMany()
 		PostLogChecker.CreateUnreachable(services)
-	}, 5 * 60 * 1000)
+	}, 15 * 1000)
 
 	// this is for first setup.
 	const authcodes = await prisma.authCode.count()

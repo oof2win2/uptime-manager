@@ -15,12 +15,11 @@ interface RegisteredPortScanRequest extends PortScanRequest {
 }
 
 export type PortScanResult =
-	| {
+	| ({
 			serviceId: number
 			scanId: number
 			succeeded: true
-			result: "open" | "closed"
-	  }
+	  } & ({ result: "open"; ping: number | null } | { result: "closed" }))
 	| {
 			serviceId: number
 			scanId: number
@@ -131,7 +130,7 @@ class RemotePortFetcherClass extends EventEmitter {
 
 		child.stdout?.on("data", handleMessage)
 		child.stderr?.on("data", handleMessage)
-		child.on("exit", () => {
+		child.on("exit", async () => {
 			clearTimeout(timeout)
 
 			const dataLine = scanData
@@ -172,11 +171,48 @@ class RemotePortFetcherClass extends EventEmitter {
 					succeeded: true,
 					result: "closed",
 				})
+
+			// we now know that the service is online, so let's calculat it's ping
+			/**
+			 * Ping the host, since we know that it is alive
+			 */
+			const fetchPing = (): Promise<number | null> => {
+				const cmd = `ping -c 1 ${scan.host}`.split(" ")
+				const child = ChildProcess.spawn(cmd.shift() as string, cmd)
+				// ping is a one-line command as opposed to nmap
+				let pingData: string
+				child.stdout.on("data", (chunk) => {
+					const data = chunk.toString()
+					pingData = data
+				})
+				return new Promise((resolve) => {
+					child.on("exit", () => {
+						// get the last line of a ping cmd, which is round-trip
+						const roundTripLine = pingData
+							.split("\n")
+							.find((line) => line.includes("round-trip"))
+						if (!roundTripLine) resolve(null)
+
+						resolve(
+							parseFloat(
+								roundTripLine
+									// split it by spaces and get the timings part
+									.split(" ")[3]
+									// get the average timing. with -c 1, it will be the same
+									// but futureproofing
+									.split("/")[1]
+							)
+						)
+					})
+				})
+			}
+
 			return this.emit("scanCompleted", {
 				serviceId: scan.serviceId,
 				scanId: scan.scanId,
 				succeeded: true,
 				result: "open",
+				ping: await fetchPing(),
 			})
 		})
 	}

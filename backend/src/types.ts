@@ -40,7 +40,7 @@ export class LogModel implements Log {
 	serviceId: number
 	@Field()
 	reachable: boolean
-	@Field()
+	@Field({ nullable: true })
 	ping: number
 	@Field()
 	createdAt: Date
