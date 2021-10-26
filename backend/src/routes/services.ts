@@ -39,7 +39,7 @@ router.post(
 			},
 		})
 
-		PostLogChecker.Update(service)
+		PostLogChecker.Update(service.id)
 
 		return res
 			.status(200)

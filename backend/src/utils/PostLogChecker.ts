@@ -6,12 +6,19 @@ class PostLogCheckerClass {
 	constructor() {
 		this.checked = new Map()
 	}
-	public Update(service: Service): void {
-		this.checked.set(service.id, new Date())
+	public Update(serviceId: number): void {
+		this.checked.set(serviceId, new Date())
 	}
+	/**
+	 *
+	 * @param services Array of services to check
+	 * @returns false if service is not being updated with POST, true if service has never been updated,
+	 * 			promise of log if the service has been updated
+	 */
 	public async CreateUnreachable(services: Service[]): Promise<void> {
 		const logs: Array<Promise<Log | boolean>> = services.map(
 			async (service) => {
+				if (!service.postUpdating) return false
 				const lastReachedAt = this.checked.get(service.id)
 				if (!lastReachedAt) {
 					// if the service is not logged in this class yet
