@@ -5,8 +5,6 @@ import "reflect-metadata"
 import { ApolloServer } from "apollo-server-express"
 import express from "express"
 import { buildSchema } from "type-graphql"
-import mongoose from "mongoose"
-// import GatherLogs from "./Logger"
 import session from "express-session"
 import connectsqlite from "connect-sqlite3"
 import { Client as DiscordOAuth2Client } from "@2pg/oauth"
@@ -16,7 +14,7 @@ import { LogResolver } from "./resolvers/Logs"
 import { UserResolver } from "./resolvers/User"
 import { AuthCodeResolver } from "./resolvers/AuthCodes"
 
-import { COOKIE_NAME, __prod__ } from "./constants"
+import { COOKIE_NAME } from "./constants"
 import { ApolloContext } from "./types"
 
 import PostLogChecker from "./utils/PostLogChecker"
@@ -34,16 +32,6 @@ const RemotePortFetcher = new RemotePortFetcherClass({
 })
 
 const run = async () => {
-	mongoose
-		.connect(ENV.MONGOOSE_URI as string, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useFindAndModify: false,
-		})
-		.then(() => {
-			console.log(`Connected to database`)
-		})
-
 	const app = express()
 
 	const DiscordOAuth2 = new DiscordOAuth2Client({
@@ -66,10 +54,8 @@ const run = async () => {
 			cookie: {
 				maxAge: 1000 * 86400 * 365, // persist cookie for 1 year
 				httpOnly: true,
-				sameSite: "lax", //
+				sameSite: "lax",
 				secure: false, // cookie works only in https
-				// signed: true,
-				// sameSite:
 			},
 			saveUninitialized: false,
 			secret: ENV.SESSION_SECRET,
