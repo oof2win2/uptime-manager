@@ -1,41 +1,51 @@
-import { Resolver, Query, Arg, Mutation, Field, ObjectType, UseMiddleware } from "type-graphql"
-import AuthCodeModel, { AuthCodeClass } from "../database/types/AuthCodes"
+import {
+	Resolver,
+	Query,
+	Arg,
+	Mutation,
+	Field,
+	ObjectType,
+	UseMiddleware,
+} from "type-graphql"
 import { FieldError } from "../types"
 import { isAuth } from "../middleware/isAuth"
+import { AuthCodeModel } from "../types"
+import prisma from "../utils/database"
 
 @ObjectType()
 class AuthCodeResponse {
 	@Field(() => [FieldError], { nullable: true })
 	errors?: FieldError[]
 
-	@Field(() => AuthCodeClass, {nullable: true})
-	code?: AuthCodeClass
+	@Field(() => AuthCodeModel, { nullable: true })
+	code?: AuthCodeModel
 
-	@Field(() => [AuthCodeClass])
-	codes?: AuthCodeClass[]
+	@Field(() => [AuthCodeModel])
+	codes?: AuthCodeModel[]
 }
 @Resolver()
 export class AuthCodeResolver {
 	@Query(() => AuthCodeResponse)
 	@UseMiddleware(isAuth)
 	async getAuthCodes(): Promise<AuthCodeResponse> {
-		const codes = await AuthCodeModel.find({}) || undefined
+		const codes = await prisma.authCode.findMany()
 		return {
-			codes: codes
+			codes: codes,
 		}
 	}
 
 	@Mutation(() => AuthCodeResponse)
 	@UseMiddleware(isAuth)
 	async createAuthCode(): Promise<AuthCodeResponse> {
-		const generateCode = (length = 8) => Math.random().toString(16).substr(2, length)
-		const code = await AuthCodeModel.create({
-			code: generateCode(),
-			createdAt: Date.now(),
-			updatedAt: Date.now(),
+		const generateCode = (length = 8) =>
+			Math.random().toString(16).substr(2, length)
+		const code = await prisma.authCode.create({
+			data: {
+				code: generateCode(),
+			},
 		})
 		return {
-			code: code
+			code: code,
 		}
 	}
 
@@ -44,9 +54,13 @@ export class AuthCodeResolver {
 	async removeAuthCode(
 		@Arg("code", () => String) code: string
 	): Promise<AuthCodeResponse> {
-		const AuthCode = await AuthCodeModel.findOneAndDelete({code: code}).exec() || undefined
+		const authcode = await prisma.authCode.delete({
+			where: {
+				code: code,
+			},
+		})
 		return {
-			code: AuthCode
+			code: authcode,
 		}
 	}
 }

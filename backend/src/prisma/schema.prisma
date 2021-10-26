@@ -1,0 +1,41 @@
+datasource db {
+    provider = "sqlite"
+    url      = env("DB_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model AuthCode {
+    code      String   @id
+    createdAt DateTime @default(now())
+}
+
+model User {
+    discordUserId    String   @id
+    discordUserTag   String
+    discordUsername  String
+    allowWriteAccess Boolean  @default(false)
+    createdAt        DateTime @default(now())
+}
+
+model Service {
+    id           Int      @id @default(autoincrement())
+    name         String
+    logs         Log[]
+    postUpdating Boolean
+    port         Int
+    url          String
+    socketType   String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+model Log {
+    id        Int     @id @default(autoincrement())
+    Service   Service @relation(fields: [serviceId], references: [id])
+    serviceId Int
+    reachable Boolean
+    ping      Int     @default(0)
+}

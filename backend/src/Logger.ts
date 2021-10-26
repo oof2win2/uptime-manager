@@ -1,14 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import ServiceModel, { ServiceClass } from "./database/types/Service"
-import LogModel from "./database/types/Logs"
-import lsofi from "lsofi"
+import { Service } from ".prisma/client"
 // import nmapWrapper from "./utils/nmapWrapper"
 
 // TODO: finish up pinging, both with TCP and UDP
 
 interface ServiceStatus {
 	online: boolean
-	service: ServiceClass
+	service: Service
 }
 
 // const nmap = new nmapWrapper({

@@ -1,16 +1,21 @@
 import { Resolver, Query, Arg } from "type-graphql"
-import Service, { ServiceClass } from "../database/types/Service"
-import { DocumentType } from "@typegoose/typegoose"
-
-
+import { ServiceLogModel, ServiceModel } from "../types"
+import prisma from "../utils/database"
 
 @Resolver()
 export class LogResolver {
-	@Query(() => ServiceClass, { nullable: true })
+	@Query(() => ServiceLogModel, { nullable: true })
 	async ServiceWithLogs(
-		@Arg("id", () => String) id: string
-	): Promise<DocumentType<ServiceClass> | null> {
-		const res = await Service.findOne({ id: id }).populate("logs").exec()
-		return res?.toObject()
+		@Arg("id", () => Number) id: number
+	): Promise<ServiceModel | null> {
+		const res = await prisma.service.findFirst({
+			where: {
+				id: id,
+			},
+			include: {
+				logs: true,
+			},
+		})
+		return res
 	}
 }

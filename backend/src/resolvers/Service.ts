@@ -1,61 +1,71 @@
 import { Resolver, Query, Arg, Mutation } from "type-graphql"
-import Service, { ServiceClass } from "../database/types/Service"
-import { DocumentType } from "@typegoose/typegoose"
-import LogModel from "../database/types/Logs"
+import { ServiceModel } from "../types"
+import prisma from "../utils/database"
 
 @Resolver()
 export class ServiceResolver {
-	@Query(() => [ServiceClass])
-	Services(): Promise<DocumentType<ServiceClass>[]> {
-		return Service.find({}).exec()
+	@Query(() => [ServiceModel])
+	Services(): Promise<ServiceModel[]> {
+		return prisma.service.findMany()
 	}
-	@Query(() => ServiceClass, { nullable: true })
-	Service(
-		@Arg("id", () => String) id: string
-	): Promise<DocumentType<ServiceClass> | null> {
-		return Service.findOne({ id: id }).exec()
+	@Query(() => ServiceModel, { nullable: true })
+	Service(@Arg("id", () => Number) id: number): Promise<ServiceModel | null> {
+		return prisma.service.findFirst({ where: { id: id } })
 	}
 
-	@Mutation(() => ServiceClass, { nullable: true })
+	@Mutation(() => ServiceModel, { nullable: true })
 	async CreateService(
 		@Arg("name", () => String) name: string,
 		@Arg("url", () => String) url: string,
 		@Arg("socketType", () => String) type: "tcp" | "udp",
 		@Arg("port", () => Number) port: number,
-		@Arg("postUpdating", () => Boolean) postUpdating: boolean,
-	): Promise<DocumentType<ServiceClass> | null> {
-		const service = await Service.create({
-			name: name,
-			url: url,
-			createdAt: Date.now(),
-			updatedAt: Date.now(),
-			socketType: type,
-			port: port,
-			logs: [],
-			postUpdating: postUpdating
+		@Arg("postUpdating", () => Boolean) postUpdating: boolean
+	): Promise<ServiceModel | null> {
+		const service = await prisma.service.create({
+			data: {
+				name: name,
+				url: url,
+				socketType: type,
+				port: port,
+				postUpdating: postUpdating,
+			},
 		})
 		return service
 	}
-	@Mutation(() => ServiceClass, { nullable: true })
+	@Mutation(() => ServiceModel, { nullable: true })
 	async DeleteService(
-		@Arg("id", () => String) id: string
-	): Promise<DocumentType<ServiceClass> | null> {
-		const service = await Service.findOneAndRemove({ id: id }).exec()
-		service?.logs.forEach(logid => LogModel.findByIdAndDelete(logid))
+		@Arg("id", () => Number) id: number
+	): Promise<ServiceModel | null> {
+		const service = await prisma.service.delete({ where: { id: id } })
+		if (service)
+			await prisma.log.deleteMany({
+				where: {
+					serviceId: service.id,
+				},
+			})
 		return service
 	}
-	@Mutation(() => ServiceClass, { nullable: true })
+	@Mutation(() => ServiceModel, { nullable: true })
 	async ModifyService(
-		@Arg("id", () => String) id: string,
+		@Arg("id", () => Number) id: number,
 		@Arg("name", () => String) name: string,
 		@Arg("url", () => String) url: string,
 		@Arg("socketType", () => String) type: "tcp" | "udp",
 		@Arg("port", () => Number) port: number,
 		@Arg("postUpdating", () => Boolean) postUpdating: boolean
-	): Promise<DocumentType<ServiceClass> | null> {
-		const service = await Service.findOneAndUpdate({ id: id }, {
-			$set: { name: name, url: url, socketType: type, port: port, postUpdating: postUpdating }
-		}, { new: true }).exec()
-		return service
+	): Promise<ServiceModel | null> {
+		const service = await prisma.service.update({
+			where: {
+				id: id,
+			},
+			data: {
+				name: name,
+				url: url,
+				socketType: type,
+				port: port,
+				postUpdating: postUpdating,
+			},
+		})
+		return service[1][0]
 	}
 }
