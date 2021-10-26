@@ -8,6 +8,7 @@
   },
   "typescript.tsdk": "client/node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "eslint.nodePath": ".yarn/sdks"
+"eslint.nodePath": ".yarn/sdks",
+"editor.formatOnSave": true
   
 }

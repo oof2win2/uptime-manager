@@ -7,7 +7,9 @@ mutation Login {
 		user {
 			discordUserId
 			discordUsername
+			discordUserTag
 			allowWriteAccess
+			createdAt
 		}
 	}
 }

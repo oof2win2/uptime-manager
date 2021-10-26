@@ -1,5 +1,5 @@
-import { UserClass } from "./generated/graphql";
+import { UserModel } from "./generated/graphql"
 
 export interface ReactGlobalState {
-	user: UserClass|null
+	user: UserModel | null
 }

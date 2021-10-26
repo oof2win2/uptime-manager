@@ -1,42 +1,50 @@
 import { Router } from "express"
-import { param, validationResult } from 'express-validator';
-import LogModel from "../database/types/Logs";
-import ServiceModel from "../database/types/Service";
-import PostLogChecker from "../utils/PostLogChecker";
+import { param, validationResult } from "express-validator"
+import prisma from "../utils/database"
+import PostLogChecker from "../utils/PostLogChecker"
 
 const router = Router()
 
-router.post("/setstatus/:serviceid",
+router.post(
+	"/setstatus/:serviceid",
 	param("serviceid").isString().escape(),
 	async (req, res) => {
 		const errors = validationResult(req)
 		if (!errors.isEmpty)
 			return res.status(400).json({ errors: errors.array() })
-		
+
 		const serviceid = req.params?.["serviceid"]
 		if (!serviceid) return res.status(400).json({})
 
-		const service = await ServiceModel.findOne({id: serviceid})
-		if (!service) return res.status(400).json({
-			errors: [{
-				location: "params",
-				msg: "Invalid service ID",
-				param: "serviceid"
-			}]
+		const service = await prisma.service.findFirst({
+			where: {
+				id: serviceid,
+			},
+		})
+		if (!service)
+			return res.status(400).json({
+				errors: [
+					{
+						location: "params",
+						msg: "Invalid service ID",
+						param: "serviceid",
+					},
+				],
+			})
+
+		await prisma.log.create({
+			data: {
+				reachable: true,
+				serviceId: service.id,
+			},
 		})
 
-		const log = await LogModel.create({
-			reachable: true,
-			createdAt: Date.now(),
-			serviceId: service._id
-		})
+		PostLogChecker.Update(service.id)
 
-		service.logs.push(log._id)
-		await service.save()
-		
-		PostLogChecker.Update(service)
-
-		return res.status(200).json({status: "OK", message: "Service status updated"})
-	})
+		return res
+			.status(200)
+			.json({ status: "OK", message: "Service status updated" })
+	}
+)
 
 export default router

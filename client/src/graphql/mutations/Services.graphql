@@ -1,23 +1,29 @@
 mutation CreateService(
-  $url: String!
-  $name: String!
-  $socketType: String!
-  $port: Float!
-  $postUpdating: Boolean!
+	$url: String!
+	$name: String!
+	$socketType: String!
+	$port: Float!
+	$postUpdating: Boolean!
 ) {
-  CreateService(url: $url, name: $name, socketType: $socketType, port: $port, postUpdating: $postUpdating) {
-    id
-    name
-    url
-    socketType
-    port
-    createdAt
-    updatedAt
-	postUpdating
-  }
+	CreateService(
+		url: $url
+		name: $name
+		socketType: $socketType
+		port: $port
+		postUpdating: $postUpdating
+	) {
+		id
+		name
+		url
+		socketType
+		port
+		createdAt
+		updatedAt
+		postUpdating
+	}
 }
 
-mutation DeleteService($id: String!) {
+mutation DeleteService($id: Float!) {
 	DeleteService(id: $id) {
 		id
 		name
@@ -29,8 +35,22 @@ mutation DeleteService($id: String!) {
 	}
 }
 
-mutation ModifyService($id: String!, $name: String!, $url: String!, $port: Float!, $socketType: String!, $postUpdating: Boolean!) {
-	ModifyService(id: $id, name: $name, url: $url, port: $port, socketType: $socketType, postUpdating: $postUpdating) {
+mutation ModifyService(
+	$id: Float!
+	$name: String!
+	$url: String!
+	$port: Float!
+	$socketType: String!
+	$postUpdating: Boolean!
+) {
+	ModifyService(
+		id: $id
+		name: $name
+		url: $url
+		port: $port
+		socketType: $socketType
+		postUpdating: $postUpdating
+	) {
 		id
 		name
 		url

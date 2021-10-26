@@ -1,4 +1,4 @@
-query ServiceWithLogs($id: String!) {
+query ServiceWithLogs($id: Float!) {
 	ServiceWithLogs(id: $id) {
 		id
 		name
@@ -9,7 +9,9 @@ query ServiceWithLogs($id: String!) {
 		port
 		logs {
 			id
+			serviceId
 			reachable
+			ping
 			createdAt
 		}
 	}
