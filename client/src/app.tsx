@@ -3,8 +3,12 @@ import "./app.css"
 import Services from "./Pages/Services/Services"
 import Navbar from "./Components/Navbar/navbar"
 import Login from "./Components/Login/login"
-import { UserClass, useGenerateAuthUrlQuery, useLoginMutation } from "./generated/graphql"
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import {
+	UserModel,
+	useGenerateAuthUrlQuery,
+	useLoginMutation,
+} from "./generated/graphql"
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom"
 import { useEffect } from "react"
 import ServiceManager from "./Pages/ServiceManager/ServiceManager"
 import { setUser } from "./redux/user"
@@ -18,23 +22,25 @@ const App = (): JSX.Element => {
 	const dispatch = useAppDispatch()
 
 	useEffect(() => {
-		if (LoginData?.Login.user?.discordUserId) dispatch(setUser(LoginData.Login.user as UserClass))
+		if (LoginData?.Login.user?.discordUserId)
+			dispatch(setUser(LoginData.Login.user as UserModel))
 	}, [dispatch, LoginData])
 	useEffect(() => {
-		if (AuthUrlData?.GenerateAuthURL.url) dispatch(setAuthUrl({AuthUrl: AuthUrlData.GenerateAuthURL.url}))
+		if (AuthUrlData?.GenerateAuthURL.url)
+			dispatch(setAuthUrl({ AuthUrl: AuthUrlData.GenerateAuthURL.url }))
 	}, [dispatch, AuthUrlData])
 
 	const pages = new Map<string, string>([
 		["Services", "/services"],
-		["Service Manager", "/servicemanager"]
+		["Service Manager", "/servicemanager"],
 	])
 	const currentPage = {
 		page: "Services",
-		location: "/services"
+		location: "/services",
 	}
 	useEffect(() => {
 		if (!user) fetchLoginData()
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []) // this is supposed to be empty because it should only run on load, never after that (since the cookie won't appear magically)
 
 	return (

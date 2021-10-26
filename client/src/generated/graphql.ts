@@ -16,18 +16,17 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type AuthCodeClass = {
-  __typename?: 'AuthCodeClass';
+export type AuthCodeModel = {
+  __typename?: 'AuthCodeModel';
   code: Scalars['String'];
   createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
 };
 
 export type AuthCodeResponse = {
   __typename?: 'AuthCodeResponse';
   errors?: Maybe<Array<FieldError>>;
-  code?: Maybe<AuthCodeClass>;
-  codes: Array<AuthCodeClass>;
+  code?: Maybe<AuthCodeModel>;
+  codes: Array<AuthCodeModel>;
 };
 
 export type AuthUrl = {
@@ -43,10 +42,12 @@ export type FieldError = {
   error: Scalars['String'];
 };
 
-export type LogClass = {
-  __typename?: 'LogClass';
-  id: Scalars['String'];
+export type LogModel = {
+  __typename?: 'LogModel';
+  id: Scalars['Float'];
+  serviceId: Scalars['Float'];
   reachable: Scalars['Boolean'];
+  ping: Scalars['Float'];
   createdAt: Scalars['DateTime'];
 };
 
@@ -57,9 +58,9 @@ export type LogoutResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  CreateService?: Maybe<ServiceClass>;
-  DeleteService?: Maybe<ServiceClass>;
-  ModifyService?: Maybe<ServiceClass>;
+  CreateService?: Maybe<ServiceModel>;
+  DeleteService?: Maybe<ServiceModel>;
+  ModifyService?: Maybe<ServiceModel>;
   Login: UserResponse;
   Logout?: Maybe<LogoutResponse>;
   SignupOrLogin: UserResponse;
@@ -80,7 +81,7 @@ export type MutationCreateServiceArgs = {
 
 
 export type MutationDeleteServiceArgs = {
-  id: Scalars['String'];
+  id: Scalars['Float'];
 };
 
 
@@ -90,7 +91,7 @@ export type MutationModifyServiceArgs = {
   socketType: Scalars['String'];
   url: Scalars['String'];
   name: Scalars['String'];
-  id: Scalars['String'];
+  id: Scalars['Float'];
 };
 
 
@@ -119,55 +120,66 @@ export type MutationRemoveAuthCodeArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  Services: Array<ServiceClass>;
-  Service?: Maybe<ServiceClass>;
-  ServiceWithLogs?: Maybe<ServiceClass>;
+  Services: Array<ServiceModel>;
+  Service?: Maybe<ServiceModel>;
+  ServiceWithLogs?: Maybe<ServiceLogModel>;
   GenerateAuthURL: AuthUrl;
   getAuthCodes: AuthCodeResponse;
 };
 
 
 export type QueryServiceArgs = {
-  id: Scalars['String'];
+  id: Scalars['Float'];
 };
 
 
 export type QueryServiceWithLogsArgs = {
-  id: Scalars['String'];
+  id: Scalars['Float'];
 };
 
-export type ServiceClass = {
-  __typename?: 'ServiceClass';
-  id: Scalars['String'];
+export type ServiceLogModel = {
+  __typename?: 'ServiceLogModel';
+  id: Scalars['Float'];
   name: Scalars['String'];
+  postUpdating: Scalars['Boolean'];
   port: Scalars['Float'];
   url: Scalars['String'];
   socketType: Scalars['String'];
-  postUpdating: Scalars['Boolean'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-  logs: Array<LogClass>;
+  logs: Array<LogModel>;
+};
+
+export type ServiceModel = {
+  __typename?: 'ServiceModel';
+  id: Scalars['Float'];
+  name: Scalars['String'];
+  postUpdating: Scalars['Boolean'];
+  port: Scalars['Float'];
+  url: Scalars['String'];
+  socketType: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Subscription = {
   __typename?: 'Subscription';
-  updateUserSubscription: UserClass;
+  updateUserSubscription: UserModel;
 };
 
-export type UserClass = {
-  __typename?: 'UserClass';
+export type UserModel = {
+  __typename?: 'UserModel';
   discordUserId: Scalars['String'];
   discordUserTag: Scalars['String'];
   discordUsername: Scalars['String'];
   allowWriteAccess: Scalars['Boolean'];
   createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
 };
 
 export type UserResponse = {
   __typename?: 'UserResponse';
   errors?: Maybe<Array<FieldError>>;
-  user?: Maybe<UserClass>;
+  user?: Maybe<UserModel>;
 };
 
 export type AllowWriteAccessMutationVariables = Exact<{
@@ -184,8 +196,8 @@ export type AllowWriteAccessMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, user?: Maybe<(
-      { __typename?: 'UserClass' }
-      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+      { __typename?: 'UserModel' }
+      & Pick<UserModel, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
     )> }
   ) }
 );
@@ -204,8 +216,8 @@ export type ForbidWriteAccessMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, user?: Maybe<(
-      { __typename?: 'UserClass' }
-      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+      { __typename?: 'UserModel' }
+      & Pick<UserModel, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
     )> }
   ) }
 );
@@ -221,8 +233,8 @@ export type CreateAuthCodeMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, code?: Maybe<(
-      { __typename?: 'AuthCodeClass' }
-      & Pick<AuthCodeClass, 'createdAt'>
+      { __typename?: 'AuthCodeModel' }
+      & Pick<AuthCodeModel, 'createdAt'>
     )> }
   ) }
 );
@@ -240,8 +252,8 @@ export type RemoveAuthCodeMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, code?: Maybe<(
-      { __typename?: 'AuthCodeClass' }
-      & Pick<AuthCodeClass, 'code' | 'createdAt'>
+      { __typename?: 'AuthCodeModel' }
+      & Pick<AuthCodeModel, 'code' | 'createdAt'>
     )> }
   ) }
 );
@@ -257,8 +269,8 @@ export type LoginMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, user?: Maybe<(
-      { __typename?: 'UserClass' }
-      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+      { __typename?: 'UserModel' }
+      & Pick<UserModel, 'discordUserId' | 'discordUsername' | 'discordUserTag' | 'allowWriteAccess' | 'createdAt'>
     )> }
   ) }
 );
@@ -286,26 +298,26 @@ export type CreateServiceMutationVariables = Exact<{
 export type CreateServiceMutation = (
   { __typename?: 'Mutation' }
   & { CreateService?: Maybe<(
-    { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt' | 'postUpdating'>
+    { __typename?: 'ServiceModel' }
+    & Pick<ServiceModel, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt' | 'postUpdating'>
   )> }
 );
 
 export type DeleteServiceMutationVariables = Exact<{
-  id: Scalars['String'];
+  id: Scalars['Float'];
 }>;
 
 
 export type DeleteServiceMutation = (
   { __typename?: 'Mutation' }
   & { DeleteService?: Maybe<(
-    { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
+    { __typename?: 'ServiceModel' }
+    & Pick<ServiceModel, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt'>
   )> }
 );
 
 export type ModifyServiceMutationVariables = Exact<{
-  id: Scalars['String'];
+  id: Scalars['Float'];
   name: Scalars['String'];
   url: Scalars['String'];
   port: Scalars['Float'];
@@ -317,8 +329,8 @@ export type ModifyServiceMutationVariables = Exact<{
 export type ModifyServiceMutation = (
   { __typename?: 'Mutation' }
   & { ModifyService?: Maybe<(
-    { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt' | 'postUpdating'>
+    { __typename?: 'ServiceModel' }
+    & Pick<ServiceModel, 'id' | 'name' | 'url' | 'socketType' | 'port' | 'createdAt' | 'updatedAt' | 'postUpdating'>
   )> }
 );
 
@@ -337,8 +349,8 @@ export type SignupOrLoginMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, user?: Maybe<(
-      { __typename?: 'UserClass' }
-      & Pick<UserClass, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
+      { __typename?: 'UserModel' }
+      & Pick<UserModel, 'discordUserId' | 'discordUsername' | 'allowWriteAccess'>
     )> }
   ) }
 );
@@ -355,18 +367,18 @@ export type GenerateAuthUrlQuery = (
 );
 
 export type ServiceWithLogsQueryVariables = Exact<{
-  id: Scalars['String'];
+  id: Scalars['Float'];
 }>;
 
 
 export type ServiceWithLogsQuery = (
   { __typename?: 'Query' }
   & { ServiceWithLogs?: Maybe<(
-    { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port'>
+    { __typename?: 'ServiceLogModel' }
+    & Pick<ServiceLogModel, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port'>
     & { logs: Array<(
-      { __typename?: 'LogClass' }
-      & Pick<LogClass, 'id' | 'reachable' | 'createdAt'>
+      { __typename?: 'LogModel' }
+      & Pick<LogModel, 'id' | 'serviceId' | 'reachable' | 'ping' | 'createdAt'>
     )> }
   )> }
 );
@@ -382,22 +394,22 @@ export type GetAuthCodesQuery = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'error'>
     )>>, codes: Array<(
-      { __typename?: 'AuthCodeClass' }
-      & Pick<AuthCodeClass, 'code' | 'createdAt'>
+      { __typename?: 'AuthCodeModel' }
+      & Pick<AuthCodeModel, 'code' | 'createdAt'>
     )> }
   ) }
 );
 
 export type ServiceQueryVariables = Exact<{
-  id: Scalars['String'];
+  id: Scalars['Float'];
 }>;
 
 
 export type ServiceQuery = (
   { __typename?: 'Query' }
   & { Service?: Maybe<(
-    { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port' | 'postUpdating'>
+    { __typename?: 'ServiceModel' }
+    & Pick<ServiceModel, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port' | 'postUpdating'>
   )> }
 );
 
@@ -407,8 +419,8 @@ export type ServicesQueryVariables = Exact<{ [key: string]: never; }>;
 export type ServicesQuery = (
   { __typename?: 'Query' }
   & { Services: Array<(
-    { __typename?: 'ServiceClass' }
-    & Pick<ServiceClass, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port' | 'postUpdating'>
+    { __typename?: 'ServiceModel' }
+    & Pick<ServiceModel, 'id' | 'name' | 'url' | 'createdAt' | 'updatedAt' | 'socketType' | 'port' | 'postUpdating'>
   )> }
 );
 
@@ -496,7 +508,9 @@ export const LoginDocument = gql`
     user {
       discordUserId
       discordUsername
+      discordUserTag
       allowWriteAccess
+      createdAt
     }
   }
 }
@@ -541,7 +555,7 @@ export function useCreateServiceMutation() {
   return Urql.useMutation<CreateServiceMutation, CreateServiceMutationVariables>(CreateServiceDocument);
 };
 export const DeleteServiceDocument = gql`
-    mutation DeleteService($id: String!) {
+    mutation DeleteService($id: Float!) {
   DeleteService(id: $id) {
     id
     name
@@ -558,7 +572,7 @@ export function useDeleteServiceMutation() {
   return Urql.useMutation<DeleteServiceMutation, DeleteServiceMutationVariables>(DeleteServiceDocument);
 };
 export const ModifyServiceDocument = gql`
-    mutation ModifyService($id: String!, $name: String!, $url: String!, $port: Float!, $socketType: String!, $postUpdating: Boolean!) {
+    mutation ModifyService($id: Float!, $name: String!, $url: String!, $port: Float!, $socketType: String!, $postUpdating: Boolean!) {
   ModifyService(
     id: $id
     name: $name
@@ -614,7 +628,7 @@ export function useGenerateAuthUrlQuery(options: Omit<Urql.UseQueryArgs<Generate
   return Urql.useQuery<GenerateAuthUrlQuery>({ query: GenerateAuthUrlDocument, ...options });
 };
 export const ServiceWithLogsDocument = gql`
-    query ServiceWithLogs($id: String!) {
+    query ServiceWithLogs($id: Float!) {
   ServiceWithLogs(id: $id) {
     id
     name
@@ -625,7 +639,9 @@ export const ServiceWithLogsDocument = gql`
     port
     logs {
       id
+      serviceId
       reachable
+      ping
       createdAt
     }
   }
@@ -654,7 +670,7 @@ export function useGetAuthCodesQuery(options: Omit<Urql.UseQueryArgs<GetAuthCode
   return Urql.useQuery<GetAuthCodesQuery>({ query: GetAuthCodesDocument, ...options });
 };
 export const ServiceDocument = gql`
-    query Service($id: String!) {
+    query Service($id: Float!) {
   Service(id: $id) {
     id
     name

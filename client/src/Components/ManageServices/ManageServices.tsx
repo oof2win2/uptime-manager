@@ -1,23 +1,40 @@
-import { useCreateServiceMutation, useServicesQuery, useDeleteServiceMutation, ServiceClass, useModifyServiceMutation, MutationModifyServiceArgs } from "src/generated/graphql"
-import { Grid, LinearProgress, Button, TextField, Dialog, Select, MenuItem, InputLabel } from "@material-ui/core"
+import {
+	useCreateServiceMutation,
+	useServicesQuery,
+	useDeleteServiceMutation,
+	ServiceModel,
+	useModifyServiceMutation,
+	MutationModifyServiceArgs,
+} from "src/generated/graphql"
+import {
+	Grid,
+	LinearProgress,
+	Button,
+	TextField,
+	Dialog,
+	Select,
+	MenuItem,
+	InputLabel,
+} from "@material-ui/core"
 import ManagerService from "./manageService"
 import { useEffect } from "react"
 import { useStyles } from "../MaterialUIElements/Themes"
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useFormik } from "formik"
+import * as Yup from "yup"
 import { useState } from "react"
 
-
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ManageServicesProp {
-
-}
+interface ManageServicesProp {}
 
 const ManageServices: React.FC<ManageServicesProp> = () => {
-	const [{ data: Services, fetching: FetchingServices }, fetchServices] = useServicesQuery()
-	const [{ fetching: CreatingService }, createService] = useCreateServiceMutation()
-	const [{ fetching: DeletingService }, deleteService] = useDeleteServiceMutation()
-	const [{ fetching: UpdatingService}, updateService] = useModifyServiceMutation()
+	const [{ data: Services, fetching: FetchingServices }, fetchServices] =
+		useServicesQuery()
+	const [{ fetching: CreatingService }, createService] =
+		useCreateServiceMutation()
+	const [{ fetching: DeletingService }, deleteService] =
+		useDeleteServiceMutation()
+	const [{ fetching: UpdatingService }, updateService] =
+		useModifyServiceMutation()
 	const [creatingService, setCreatingService] = useState(false)
 
 	const styles = useStyles()
@@ -37,7 +54,7 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 		if (!UpdatingService) fetchServices()
 	}, [UpdatingService, fetchServices])
 
-	const removeService = (id: string) => {
+	const removeService = (id: number) => {
 		deleteService({ id: id })
 	}
 	const updateServiceWrap = (update: MutationModifyServiceArgs) => {
@@ -45,10 +62,15 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 	}
 	const formValidationSchema = Yup.object().shape({
 		serviceName: Yup.string().required("Required"),
-		socketType: Yup.string().oneOf(["udp", "tcp"], "Must be one of udp or tcp").required("Required"),
-		port: Yup.number().min(0, "Port cannot be negative").max(65535, "Too high number to be a port").required("Required"),
+		socketType: Yup.string()
+			.oneOf(["udp", "tcp"], "Must be one of udp or tcp")
+			.required("Required"),
+		port: Yup.number()
+			.min(0, "Port cannot be negative")
+			.max(65535, "Too high number to be a port")
+			.required("Required"),
 		url: Yup.string().required("URL is required"),
-		postUpdating: Yup.boolean().required("postUpdating is required")
+		postUpdating: Yup.boolean().required("postUpdating is required"),
 	})
 
 	const formik = useFormik({
@@ -57,22 +79,25 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 			socketType: "",
 			port: "0",
 			url: "",
-			postUpdating: "false"
+			postUpdating: "false",
 		},
 		validationSchema: formValidationSchema,
-		onSubmit: ((values) => {
+		onSubmit: (values) => {
 			createService({
 				name: values.serviceName,
 				url: values.url,
 				port: parseInt(values.port),
 				socketType: values.socketType,
-				postUpdating: values.postUpdating == "true" ? true : false
+				postUpdating: values.postUpdating == "true" ? true : false,
 			})
-		})
+		},
 	})
 
-	const createServiceForm =
-		<Dialog open={creatingService} onClose={() => setCreatingService(false)}>
+	const createServiceForm = (
+		<Dialog
+			open={creatingService}
+			onClose={() => setCreatingService(false)}
+		>
 			<form onSubmit={formik.handleSubmit} style={{ margin: 24 }}>
 				<InputLabel>Service name</InputLabel>
 				<TextField
@@ -81,8 +106,13 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 					name="serviceName"
 					value={formik.values.serviceName}
 					onChange={formik.handleChange}
-					error={formik.touched.serviceName && Boolean(formik.errors.serviceName)}
-					helperText={formik.touched.serviceName && formik.errors.serviceName}
+					error={
+						formik.touched.serviceName &&
+						Boolean(formik.errors.serviceName)
+					}
+					helperText={
+						formik.touched.serviceName && formik.errors.serviceName
+					}
 				/>
 				<InputLabel>Service URL</InputLabel>
 				<TextField
@@ -91,7 +121,9 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 					name="url"
 					value={formik.values.url}
 					onChange={formik.handleChange}
-					error={formik.touched.url && Boolean(formik.errors.serviceName)}
+					error={
+						formik.touched.url && Boolean(formik.errors.serviceName)
+					}
 					helperText={formik.touched.url && formik.errors.url}
 				/>
 				<InputLabel>Service port</InputLabel>
@@ -113,20 +145,26 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 					label="Socket type"
 					value={formik.values.socketType}
 					onChange={formik.handleChange}
-					error={formik.touched.socketType && Boolean(formik.touched.socketType)}
+					error={
+						formik.touched.socketType &&
+						Boolean(formik.touched.socketType)
+					}
 				>
 					<MenuItem value="udp">UDP</MenuItem>
 					<MenuItem value="tcp">TCP</MenuItem>
 				</Select>
 				<InputLabel>POST updating</InputLabel>
-				<Select 
+				<Select
 					fullWidth
 					id="postUpdating"
 					name="postUpdating"
 					label="POST updating"
 					value={formik.values.postUpdating}
 					onChange={formik.handleChange}
-					error={formik.touched.postUpdating && Boolean(formik.touched.postUpdating)}
+					error={
+						formik.touched.postUpdating &&
+						Boolean(formik.touched.postUpdating)
+					}
 				>
 					<MenuItem value="true">Yes</MenuItem>
 					<MenuItem value="false">No</MenuItem>
@@ -136,40 +174,58 @@ const ManageServices: React.FC<ManageServicesProp> = () => {
 				</Button>
 			</form>
 		</Dialog>
-
-
-	if (FetchingServices || CreatingService || DeletingService) return (
-		<div>
-			<LinearProgress />
-		</div>
-	)
-	if (!Services?.Services) return (
-		<div>
-			<p className={styles.p}>An error has occured.</p>
-		</div>
 	)
 
-	const services = Services.Services as ServiceClass[]
-	if (!services.length) return (
-		<div>
-			<p className={styles.p}>No services to display</p>
-			<Button onClick={() => {
-				setCreatingService(true)
-			}}
-			>
-				<p className={styles.p}>Create a service</p>
-			</Button>
-			{createServiceForm}
-		</div>
-	)
+	if (FetchingServices || CreatingService || DeletingService)
+		return (
+			<div>
+				<LinearProgress />
+			</div>
+		)
+	if (!Services?.Services)
+		return (
+			<div>
+				<p className={styles.p}>An error has occured.</p>
+			</div>
+		)
+
+	const services = Services.Services as ServiceModel[]
+	if (!services.length)
+		return (
+			<div>
+				<p className={styles.p}>No services to display</p>
+				<Button
+					onClick={() => {
+						setCreatingService(true)
+					}}
+				>
+					<p className={styles.p}>Create a service</p>
+				</Button>
+				{createServiceForm}
+			</div>
+		)
 	return (
 		<div>
-			<Grid container spacing={2} direction="row" alignItems="center" justify="center">
-				{services.map((service, i) => <ManagerService service={service} key={i} deleteService={removeService} modifyService={updateServiceWrap} />)}
+			<Grid
+				container
+				spacing={2}
+				direction="row"
+				alignItems="center"
+				justify="center"
+			>
+				{services.map((service, i) => (
+					<ManagerService
+						service={service}
+						key={i}
+						deleteService={removeService}
+						modifyService={updateServiceWrap}
+					/>
+				))}
 			</Grid>
-			<Button onClick={() => {
-				setCreatingService(true)
-			}}
+			<Button
+				onClick={() => {
+					setCreatingService(true)
+				}}
 			>
 				<p className={styles.p}>Create a service</p>
 			</Button>

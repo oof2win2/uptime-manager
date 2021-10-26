@@ -1,4 +1,4 @@
-query Service($id: String!) {
+query Service($id: Float!) {
 	Service(id: $id) {
 		id
 		name
