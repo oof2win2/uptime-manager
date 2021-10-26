@@ -19,8 +19,9 @@ const Day: React.FC<{ logs: LogModel[]; pos: number }> = ({
 		) / 10
 	}%`
 	const timeString = new Date(logs[0].createdAt).toDateString()
-	const avgPing =
+	const avgPing = Math.round(
 		logs.map((log) => log.ping).reduce((a, b) => a + b) / logs.length
+	)
 	const dataTooltip = ReactDOMServer.renderToString(
 		<div>
 			<p
@@ -35,7 +36,7 @@ const Day: React.FC<{ logs: LogModel[]; pos: number }> = ({
 				{percentageOnline} up
 			</p>
 			<p style={{ paddingTop: 0 }}>{timeString}</p>
-			<p style={{ paddingTop: 0 }}>Average ping: {avgPing}</p>
+			<p style={{ paddingTop: 0 }}>Average ping: {avgPing}ms</p>
 		</div>
 	)
 	const calculateColor = (): string => {

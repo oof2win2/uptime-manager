@@ -124,29 +124,33 @@ const run = async () => {
 			requests = requests.filter(
 				(request) => request.scanId !== result.scanId
 			)
-			prisma.log.create({
-				data: {
-					serviceId: result.serviceId,
-					reachable: result.succeeded && result.result == "open",
-					// get the ping if it is open. can be null though
-					ping:
-						result.succeeded &&
-						result.result == "open" &&
-						result.ping,
-				},
-			})
+			prisma.log
+				.create({
+					data: {
+						serviceId: result.serviceId,
+						reachable: result.succeeded && result.result == "open",
+						// get the ping if it is open. can be null though
+						ping:
+							result.succeeded &&
+							result.result == "open" &&
+							result.ping,
+					},
+				})
+				// eslint-disable-next-line @typescript-eslint/no-empty-function
+				.then(() => {}) // the create doesnt run if this isnt there
 			if (requests.length == 0) {
 				RemotePortFetcher.off("scanCompleted", listener)
 			}
 		}
 		RemotePortFetcher.on("scanCompleted", listener)
-	}, 10 * 1000) // gather logs every 5 mins by default
+	}, 5 * 60 * 1000) // gather logs every 5 mins
 
-	// This is used to manage the API requests
+	// This is used to manage the API requests and make sure that services that should
+	// update their own status in fact do
 	setInterval(async () => {
 		const services = await prisma.service.findMany()
 		PostLogChecker.CreateUnreachable(services)
-	}, 15 * 1000)
+	}, 5 * 60 * 1000)
 
 	// this is for first setup.
 	const authcodes = await prisma.authCode.count()
